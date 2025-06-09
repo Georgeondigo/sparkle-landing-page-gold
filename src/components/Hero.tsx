@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { ArrowDown, MapPin, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -122,7 +123,7 @@ const Hero = () => {
             
             <div className="text-center">
               <div className="w-12 h-12 bg-secondary/10 rounded-full flex items-center justify-center mx-auto mb-3">
-                <OrderNowButton className="text-secondary" size={20} />
+                <Star className="text-secondary" size={20} />
               </div>
               <p className="text-sm font-medium text-primary">Instant Support</p>
               <p className="text-xs text-muted-foreground">WhatsApp customer service</p>
