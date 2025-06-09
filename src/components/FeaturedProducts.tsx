@@ -1,8 +1,8 @@
 
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Star, MessageCircle } from 'lucide-react';
+import { Star } from 'lucide-react';
+import OrderNowButton from './OrderNowButton';
 
 const FeaturedProducts = () => {
   const products = [
@@ -31,11 +31,6 @@ const FeaturedProducts = () => {
       price: "₹699"
     }
   ];
-
-  const handleShopNow = () => {
-    const message = encodeURIComponent("Hi! I'm interested in purchasing Tiffany Sparkles products. Could you please share the catalog and pricing?");
-    window.open(`https://wa.me/919876543210?text=${message}`, '_blank');
-  };
 
   return (
     <section id="featured-products" className="py-20 bg-background">
@@ -76,14 +71,10 @@ const FeaturedProducts = () => {
                 
                 <div className="flex items-center justify-between">
                   <span className="text-2xl font-bold text-secondary">{product.price}</span>
-                  <Button 
-                    onClick={handleShopNow}
+                  <OrderNowButton 
                     size="sm"
                     className="bg-primary hover:bg-primary/90"
-                  >
-                    <MessageCircle size={16} className="mr-2" />
-                    Order Now
-                  </Button>
+                  />
                 </div>
               </CardContent>
             </Card>
@@ -91,14 +82,10 @@ const FeaturedProducts = () => {
         </div>
 
         <div className="text-center mt-12">
-          <Button 
-            onClick={handleShopNow}
+          <OrderNowButton 
             size="lg"
             className="bg-secondary text-secondary-foreground hover:bg-secondary/90"
-          >
-            <MessageCircle className="mr-2" size={18} />
-            Shop All Products
-          </Button>
+          />
         </div>
       </div>
     </section>

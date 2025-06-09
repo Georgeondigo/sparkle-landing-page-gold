@@ -1,7 +1,7 @@
-
 import React, { useEffect, useState } from 'react';
-import { ArrowDown, MessageCircle, MapPin, Star } from 'lucide-react';
+import { ArrowDown, MapPin, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import OrderNowButton from './OrderNowButton';
 
 const Hero = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -22,11 +22,6 @@ const Hero = () => {
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });
     }
-  };
-
-  const handleShopNow = () => {
-    const message = encodeURIComponent("Hi! I'm interested in purchasing Tiffany Sparkles products. Could you please share the catalog?");
-    window.open(`https://wa.me/919876543210?text=${message}`, '_blank');
   };
 
   return (
@@ -90,14 +85,10 @@ const Hero = () => {
 
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
-            <Button 
-              onClick={handleShopNow}
+            <OrderNowButton 
               size="lg"
               className="bg-secondary text-secondary-foreground hover:bg-secondary/90 transform hover:scale-105 transition-all duration-300 shadow-lg"
-            >
-              <MessageCircle className="mr-2" size={18} />
-              Shop Now
-            </Button>
+            />
             
             <Button 
               onClick={scrollToProducts}
@@ -119,7 +110,7 @@ const Hero = () => {
             </Button>
           </div>
 
-          {/* Value Propositions */}
+          {/* value propositions section */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
             <div className="text-center">
               <div className="w-12 h-12 bg-secondary/10 rounded-full flex items-center justify-center mx-auto mb-3">
@@ -131,7 +122,7 @@ const Hero = () => {
             
             <div className="text-center">
               <div className="w-12 h-12 bg-secondary/10 rounded-full flex items-center justify-center mx-auto mb-3">
-                <MessageCircle className="text-secondary" size={20} />
+                <OrderNowButton className="text-secondary" size={20} />
               </div>
               <p className="text-sm font-medium text-primary">Instant Support</p>
               <p className="text-xs text-muted-foreground">WhatsApp customer service</p>
