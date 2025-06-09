@@ -1,6 +1,7 @@
 
 import React, { useEffect, useState } from 'react';
-import { ArrowDown } from 'lucide-react';
+import { ArrowDown, MessageCircle, MapPin, Star } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 const Hero = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -10,10 +11,22 @@ const Hero = () => {
   }, []);
 
   const scrollToProducts = () => {
-    const element = document.getElementById('products');
+    const element = document.getElementById('featured-products');
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });
     }
+  };
+
+  const scrollToLocations = () => {
+    const element = document.getElementById('locations');
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  const handleShopNow = () => {
+    const message = encodeURIComponent("Hi! I'm interested in purchasing Tiffany Sparkles products. Could you please share the catalog?");
+    window.open(`https://wa.me/919876543210?text=${message}`, '_blank');
   };
 
   return (
@@ -36,6 +49,21 @@ const Hero = () => {
         <div className={`transition-all duration-1000 ${
           isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
         }`}>
+          {/* Trust Indicators */}
+          <div className="flex items-center justify-center space-x-6 mb-8">
+            <div className="flex items-center space-x-1">
+              <div className="flex">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} size={16} className="text-secondary fill-current" />
+                ))}
+              </div>
+              <span className="text-sm text-muted-foreground ml-2">4.9/5 Rating</span>
+            </div>
+            <div className="text-sm text-muted-foreground">
+              10,000+ Happy Customers
+            </div>
+          </div>
+
           {/* Main Heading */}
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-serif font-bold text-primary mb-6 leading-tight">
             Tiffany
@@ -61,19 +89,61 @@ const Hero = () => {
           </p>
 
           {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <button 
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
+            <Button 
+              onClick={handleShopNow}
+              size="lg"
+              className="bg-secondary text-secondary-foreground hover:bg-secondary/90 transform hover:scale-105 transition-all duration-300 shadow-lg"
+            >
+              <MessageCircle className="mr-2" size={18} />
+              Shop Now
+            </Button>
+            
+            <Button 
               onClick={scrollToProducts}
-              className="bg-primary text-primary-foreground px-8 py-3 rounded-lg font-medium hover:bg-primary/90 transform hover:scale-105 transition-all duration-300 shadow-lg"
+              variant="outline"
+              size="lg"
+              className="border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-all duration-300"
             >
-              Discover Our Products
-            </button>
-            <button 
-              onClick={() => document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' })}
-              className="border border-primary text-primary px-8 py-3 rounded-lg font-medium hover:bg-primary hover:text-primary-foreground transition-all duration-300"
+              View Products
+            </Button>
+            
+            <Button 
+              onClick={scrollToLocations}
+              variant="ghost"
+              size="lg"
+              className="text-primary hover:bg-primary/10 transition-all duration-300"
             >
-              Learn More
-            </button>
+              <MapPin className="mr-2" size={18} />
+              Find a Store
+            </Button>
+          </div>
+
+          {/* Value Propositions */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+            <div className="text-center">
+              <div className="w-12 h-12 bg-secondary/10 rounded-full flex items-center justify-center mx-auto mb-3">
+                <Star className="text-secondary" size={20} />
+              </div>
+              <p className="text-sm font-medium text-primary">Premium Quality</p>
+              <p className="text-xs text-muted-foreground">Superior microfiber technology</p>
+            </div>
+            
+            <div className="text-center">
+              <div className="w-12 h-12 bg-secondary/10 rounded-full flex items-center justify-center mx-auto mb-3">
+                <MessageCircle className="text-secondary" size={20} />
+              </div>
+              <p className="text-sm font-medium text-primary">Instant Support</p>
+              <p className="text-xs text-muted-foreground">WhatsApp customer service</p>
+            </div>
+            
+            <div className="text-center">
+              <div className="w-12 h-12 bg-secondary/10 rounded-full flex items-center justify-center mx-auto mb-3">
+                <MapPin className="text-secondary" size={20} />
+              </div>
+              <p className="text-sm font-medium text-primary">Nationwide</p>
+              <p className="text-xs text-muted-foreground">Available across India</p>
+            </div>
           </div>
         </div>
 
