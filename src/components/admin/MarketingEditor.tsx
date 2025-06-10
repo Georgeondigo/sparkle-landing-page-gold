@@ -48,7 +48,7 @@ const MarketingEditor = () => {
       if (error) throw error;
 
       if (data?.content) {
-        setContent(data.content as MarketingContent);
+        setContent(data.content as unknown as MarketingContent);
       }
     } catch (error) {
       console.error('Error fetching marketing content:', error);
@@ -139,7 +139,7 @@ const MarketingEditor = () => {
         const { error } = await supabase
           .from('content_sections')
           .update({
-            content: content,
+            content: content as any,
             updated_at: new Date().toISOString()
           })
           .eq('section_name', 'marketing_section');
@@ -151,7 +151,7 @@ const MarketingEditor = () => {
           .from('content_sections')
           .insert({
             section_name: 'marketing_section',
-            content: content
+            content: content as any
           });
 
         if (error) throw error;

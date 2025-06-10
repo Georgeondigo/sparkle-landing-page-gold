@@ -46,7 +46,7 @@ const ProductsEditor = () => {
       if (error) throw error;
 
       if (data?.content) {
-        setContent(data.content as ProductsContent);
+        setContent(data.content as unknown as ProductsContent);
       }
     } catch (error) {
       console.error('Error fetching products content:', error);
@@ -132,7 +132,7 @@ const ProductsEditor = () => {
         const { error } = await supabase
           .from('content_sections')
           .update({
-            content: content,
+            content: content as any,
             updated_at: new Date().toISOString()
           })
           .eq('section_name', 'featured_products');
@@ -144,7 +144,7 @@ const ProductsEditor = () => {
           .from('content_sections')
           .insert({
             section_name: 'featured_products',
-            content: content
+            content: content as any
           });
 
         if (error) throw error;

@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Star } from 'lucide-react';
@@ -60,7 +61,7 @@ const FeaturedProducts = () => {
         .maybeSingle();
 
       if (!error && data?.content) {
-        setContent(data.content as ProductsContent);
+        setContent(data.content as unknown as ProductsContent);
       }
     } catch (error) {
       console.error('Error fetching products content:', error);

@@ -41,7 +41,7 @@ const HeroEditor = () => {
       if (error) throw error;
 
       if (data?.content) {
-        setContent(data.content as HeroContent);
+        setContent(data.content as unknown as HeroContent);
       }
     } catch (error) {
       console.error('Error fetching hero content:', error);
@@ -95,7 +95,7 @@ const HeroEditor = () => {
         const { error } = await supabase
           .from('content_sections')
           .update({
-            content: content,
+            content: content as any,
             updated_at: new Date().toISOString()
           })
           .eq('section_name', 'hero');
@@ -107,7 +107,7 @@ const HeroEditor = () => {
           .from('content_sections')
           .insert({
             section_name: 'hero',
-            content: content
+            content: content as any
           });
 
         if (error) throw error;

@@ -34,7 +34,7 @@ const Hero = () => {
         .maybeSingle();
 
       if (!error && data?.content) {
-        setContent(data.content as HeroContent);
+        setContent(data.content as unknown as HeroContent);
       }
     } catch (error) {
       console.error('Error fetching hero content:', error);
