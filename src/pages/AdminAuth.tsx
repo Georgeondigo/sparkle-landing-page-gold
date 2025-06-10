@@ -21,13 +21,13 @@ const AdminAuth = () => {
     const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
-        const { data: profile } = await supabase
+        const { data: profile } = await (supabase as any)
           .from('profiles')
           .select('role')
           .eq('id', session.user.id)
           .single();
         
-        if (profile?.role === 'admin') {
+        if (profile && profile.role === 'admin') {
           navigate('/admin');
         }
       }
@@ -52,13 +52,13 @@ const AdminAuth = () => {
       }
 
       if (data.user) {
-        const { data: profile, error: profileError } = await supabase
+        const { data: profile, error: profileError } = await (supabase as any)
           .from('profiles')
           .select('role')
           .eq('id', data.user.id)
           .single();
 
-        if (profileError || profile?.role !== 'admin') {
+        if (profileError || !profile || profile.role !== 'admin') {
           setError('Access denied. Admin privileges required.');
           await supabase.auth.signOut();
           return;

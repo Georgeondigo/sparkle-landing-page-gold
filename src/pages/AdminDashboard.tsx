@@ -27,13 +27,13 @@ const AdminDashboard = () => {
         return;
       }
 
-      const { data: profile, error } = await supabase
+      const { data: profile, error } = await (supabase as any)
         .from('profiles')
         .select('*')
         .eq('id', session.user.id)
         .single();
 
-      if (error || profile?.role !== 'admin') {
+      if (error || !profile || profile.role !== 'admin') {
         navigate('/admin/auth');
         return;
       }
