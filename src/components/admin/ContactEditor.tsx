@@ -38,7 +38,7 @@ const ContactEditor = () => {
 
   const fetchContactSettings = async () => {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('contact_settings')
         .select('*')
         .limit(1)
@@ -66,15 +66,15 @@ const ContactEditor = () => {
   const handleSave = async () => {
     setSaving(true);
     try {
-      const { data: existing } = await supabase
+      const { data: existing } = await (supabase as any)
         .from('contact_settings')
         .select('id')
         .limit(1)
         .single();
 
-      if (existing) {
+      if (existing?.id) {
         // Update existing
-        const { error } = await supabase
+        const { error } = await (supabase as any)
           .from('contact_settings')
           .update({
             ...settings,
@@ -85,7 +85,7 @@ const ContactEditor = () => {
         if (error) throw error;
       } else {
         // Insert new
-        const { error } = await supabase
+        const { error } = await (supabase as any)
           .from('contact_settings')
           .insert(settings);
 

@@ -30,7 +30,7 @@ const TestimonialsEditor = () => {
 
   const fetchTestimonials = async () => {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('testimonials')
         .select('*')
         .order('created_at', { ascending: false });
@@ -89,7 +89,7 @@ const TestimonialsEditor = () => {
     
     if (testimonial.id) {
       try {
-        const { error } = await supabase
+        const { error } = await (supabase as any)
           .from('testimonials')
           .delete()
           .eq('id', testimonial.id);
@@ -118,7 +118,7 @@ const TestimonialsEditor = () => {
       for (const testimonial of testimonials) {
         if (testimonial.id) {
           // Update existing
-          const { error } = await supabase
+          const { error } = await (supabase as any)
             .from('testimonials')
             .update({
               name: testimonial.name,
@@ -134,7 +134,7 @@ const TestimonialsEditor = () => {
           if (error) throw error;
         } else {
           // Insert new
-          const { error } = await supabase
+          const { error } = await (supabase as any)
             .from('testimonials')
             .insert({
               name: testimonial.name,

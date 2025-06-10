@@ -31,7 +31,7 @@ const LocationsEditor = () => {
 
   const fetchLocations = async () => {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('store_locations')
         .select('*')
         .order('created_at', { ascending: false });
@@ -65,7 +65,7 @@ const LocationsEditor = () => {
     
     if (location.id) {
       try {
-        const { error } = await supabase
+        const { error } = await (supabase as any)
           .from('store_locations')
           .delete()
           .eq('id', location.id);
@@ -110,7 +110,7 @@ const LocationsEditor = () => {
       for (const location of locations) {
         if (location.id) {
           // Update existing
-          const { error } = await supabase
+          const { error } = await (supabase as any)
             .from('store_locations')
             .update({
               name: location.name,
@@ -127,7 +127,7 @@ const LocationsEditor = () => {
           if (error) throw error;
         } else {
           // Insert new
-          const { error } = await supabase
+          const { error } = await (supabase as any)
             .from('store_locations')
             .insert({
               name: location.name,

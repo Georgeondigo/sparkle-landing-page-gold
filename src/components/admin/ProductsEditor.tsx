@@ -37,7 +37,7 @@ const ProductsEditor = () => {
 
   const fetchProductsContent = async () => {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('content_sections')
         .select('content')
         .eq('section_name', 'featured_products')
@@ -112,7 +112,7 @@ const ProductsEditor = () => {
   const handleSave = async () => {
     setSaving(true);
     try {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('content_sections')
         .upsert({
           section_name: 'featured_products',

@@ -32,7 +32,7 @@ const HeroEditor = () => {
 
   const fetchHeroContent = async () => {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('content_sections')
         .select('content')
         .eq('section_name', 'hero')
@@ -83,7 +83,7 @@ const HeroEditor = () => {
   const handleSave = async () => {
     setSaving(true);
     try {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('content_sections')
         .upsert({
           section_name: 'hero',

@@ -28,7 +28,7 @@ const FAQEditor = () => {
 
   const fetchFAQs = async () => {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('faqs')
         .select('*')
         .order('order_index', { ascending: true });
@@ -59,7 +59,7 @@ const FAQEditor = () => {
     
     if (faq.id) {
       try {
-        const { error } = await supabase
+        const { error } = await (supabase as any)
           .from('faqs')
           .delete()
           .eq('id', faq.id);
@@ -103,7 +103,7 @@ const FAQEditor = () => {
       for (const faq of faqs) {
         if (faq.id) {
           // Update existing
-          const { error } = await supabase
+          const { error } = await (supabase as any)
             .from('faqs')
             .update({
               question: faq.question,
@@ -117,7 +117,7 @@ const FAQEditor = () => {
           if (error) throw error;
         } else {
           // Insert new
-          const { error } = await supabase
+          const { error } = await (supabase as any)
             .from('faqs')
             .insert({
               question: faq.question,
