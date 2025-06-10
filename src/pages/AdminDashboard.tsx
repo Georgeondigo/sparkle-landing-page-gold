@@ -5,13 +5,14 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { LogOut, Home, Users, MapPin, MessageSquare, HelpCircle, Settings, Image } from 'lucide-react';
+import { LogOut, Home, Users, MapPin, MessageSquare, HelpCircle, Settings, Image, Megaphone } from 'lucide-react';
 import HeroEditor from '@/components/admin/HeroEditor';
 import ProductsEditor from '@/components/admin/ProductsEditor';
 import TestimonialsEditor from '@/components/admin/TestimonialsEditor';
 import FAQEditor from '@/components/admin/FAQEditor';
 import LocationsEditor from '@/components/admin/LocationsEditor';
 import ContactEditor from '@/components/admin/ContactEditor';
+import MarketingEditor from '@/components/admin/MarketingEditor';
 
 const AdminDashboard = () => {
   const [user, setUser] = useState(null);
@@ -104,7 +105,7 @@ const AdminDashboard = () => {
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
         <Tabs defaultValue="hero" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-6">
+          <TabsList className="grid w-full grid-cols-7">
             <TabsTrigger value="hero" className="flex items-center space-x-2">
               <Image size={16} />
               <span className="hidden sm:inline">Hero</span>
@@ -112,6 +113,10 @@ const AdminDashboard = () => {
             <TabsTrigger value="products" className="flex items-center space-x-2">
               <Users size={16} />
               <span className="hidden sm:inline">Products</span>
+            </TabsTrigger>
+            <TabsTrigger value="marketing" className="flex items-center space-x-2">
+              <Megaphone size={16} />
+              <span className="hidden sm:inline">Marketing</span>
             </TabsTrigger>
             <TabsTrigger value="testimonials" className="flex items-center space-x-2">
               <MessageSquare size={16} />
@@ -149,6 +154,17 @@ const AdminDashboard = () => {
               </CardHeader>
               <CardContent>
                 <ProductsEditor />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="marketing">
+            <Card>
+              <CardHeader>
+                <CardTitle>Marketing Showcase</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <MarketingEditor />
               </CardContent>
             </Card>
           </TabsContent>

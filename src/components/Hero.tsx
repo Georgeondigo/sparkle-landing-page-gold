@@ -3,13 +3,44 @@ import React, { useEffect, useState } from 'react';
 import { ArrowDown, MapPin, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import OrderNowButton from './OrderNowButton';
+import { supabase } from '@/integrations/supabase/client';
+
+interface HeroContent {
+  title: string;
+  subtitle: string;
+  description: string;
+  image_url: string;
+}
 
 const Hero = () => {
   const [isVisible, setIsVisible] = useState(false);
+  const [content, setContent] = useState<HeroContent>({
+    title: 'Tiffany Sparkles',
+    subtitle: 'Premium Microfiber Excellence',
+    description: 'Experience the ultimate in cleaning technology with our superior microfiber cloths. Designed for modern lifestyles, crafted with precision, and built to last.',
+    image_url: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=2000'
+  });
 
   useEffect(() => {
     setIsVisible(true);
+    fetchHeroContent();
   }, []);
+
+  const fetchHeroContent = async () => {
+    try {
+      const { data, error } = await (supabase as any)
+        .from('content_sections')
+        .select('content')
+        .eq('section_name', 'hero')
+        .single();
+
+      if (!error && data?.content) {
+        setContent(data.content as HeroContent);
+      }
+    } catch (error) {
+      console.error('Error fetching hero content:', error);
+    }
+  };
 
   const scrollToProducts = () => {
     const element = document.getElementById('featured-products');
@@ -33,7 +64,7 @@ const Hero = () => {
       {/* Background Image */}
       <div className="absolute inset-0 z-0">
         <img 
-          src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=2000" 
+          src={content.image_url} 
           alt="Premium microfiber cloth background"
           className="w-full h-full object-cover opacity-10"
         />
@@ -62,21 +93,21 @@ const Hero = () => {
 
           {/* Main Heading */}
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-serif font-bold text-primary mb-6 leading-tight">
-            Tiffany
-            <span className="block text-transparent bg-gradient-to-r from-primary to-secondary bg-clip-text">
-              Sparkles
-            </span>
+            {content.title.split(' ').map((word, index) => (
+              <span key={index} className={index === 1 ? "block text-transparent bg-gradient-to-r from-primary to-secondary bg-clip-text" : ""}>
+                {word}{index === 0 ? ' ' : ''}
+              </span>
+            ))}
           </h1>
 
           {/* Tagline */}
           <p className="text-lg md:text-xl text-muted-foreground mb-4 max-w-2xl mx-auto">
-            Premium Microfiber Excellence
+            {content.subtitle}
           </p>
 
           {/* Description */}
           <p className="text-base md:text-lg text-foreground/80 mb-8 max-w-3xl mx-auto leading-relaxed">
-            Experience the ultimate in cleaning technology with our superior microfiber cloths. 
-            Designed for modern lifestyles, crafted with precision, and built to last.
+            {content.description}
           </p>
 
           {/* Brand Attribution */}
