@@ -1,34 +1,72 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { MapPin, Store, Phone, ExternalLink } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+
+interface StoreLocation {
+  id: string;
+  name: string;
+  address: string;
+  phone?: string;
+  store_type: string;
+  latitude?: number;
+  longitude?: number;
+  is_active: boolean;
+}
 
 const LocationsMap = () => {
-  const [selectedLocation, setSelectedLocation] = useState(null);
+  const [selectedLocation, setSelectedLocation] = useState<string | null>(null);
+  const [storeLocations, setStoreLocations] = useState<StoreLocation[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // Sample store locations (replace with actual data)
-  const storeLocations = [
-    {
-      id: 1,
-      name: "Premium Homeware Mumbai",
-      address: "123 Shopping Mall, Bandra West, Mumbai 400050",
-      phone: "+91 98765 43210",
-      type: "Retail Partner"
-    },
-    {
-      id: 2,
-      name: "Quality Essentials Delhi",
-      address: "456 Market Street, Connaught Place, New Delhi 110001",
-      phone: "+91 98765 43211",
-      type: "Authorized Dealer"
-    },
-    {
-      id: 3,
-      name: "Home Solutions Bangalore",
-      address: "789 Commercial Complex, MG Road, Bangalore 560001",
-      phone: "+91 98765 43212",
-      type: "Retail Partner"
+  useEffect(() => {
+    fetchStoreLocations();
+  }, []);
+
+  const fetchStoreLocations = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('store_locations')
+        .select('*')
+        .eq('is_active', true)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      setStoreLocations(data || []);
+    } catch (error) {
+      console.error('Error fetching store locations:', error);
+      // Fallback to sample data if fetch fails
+      setStoreLocations([
+        {
+          id: '1',
+          name: "Premium Homeware Mumbai",
+          address: "123 Shopping Mall, Bandra West, Mumbai 400050",
+          phone: "+91 98765 43210",
+          store_type: "Retail Partner",
+          is_active: true
+        },
+        {
+          id: '2',
+          name: "Quality Essentials Delhi",
+          address: "456 Market Street, Connaught Place, New Delhi 110001",
+          phone: "+91 98765 43211",
+          store_type: "Authorized Dealer",
+          is_active: true
+        },
+        {
+          id: '3',
+          name: "Home Solutions Bangalore",
+          address: "789 Commercial Complex, MG Road, Bangalore 560001",
+          phone: "+91 98765 43212",
+          store_type: "Retail Partner",
+          is_active: true
+        }
+      ]);
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
 
   return (
     <section id="locations" className="py-20 bg-muted/30">
@@ -63,10 +101,17 @@ const LocationsMap = () => {
                   </div>
                 </div>
                 
-                {/* Simulated map pins */}
-                <div className="absolute top-1/4 left-1/3 w-4 h-4 bg-secondary rounded-full animate-pulse"></div>
-                <div className="absolute top-1/2 right-1/4 w-4 h-4 bg-secondary rounded-full animate-pulse"></div>
-                <div className="absolute bottom-1/3 left-1/2 w-4 h-4 bg-secondary rounded-full animate-pulse"></div>
+                {/* Simulated map pins based on store locations */}
+                {storeLocations.slice(0, 3).map((_, index) => (
+                  <div 
+                    key={index}
+                    className={`absolute w-4 h-4 bg-secondary rounded-full animate-pulse ${
+                      index === 0 ? 'top-1/4 left-1/3' :
+                      index === 1 ? 'top-1/2 right-1/4' :
+                      'bottom-1/3 left-1/2'
+                    }`}
+                  ></div>
+                ))}
               </div>
             </div>
           </div>
@@ -78,37 +123,43 @@ const LocationsMap = () => {
               Our Retail Partners
             </h3>
             
-            <div className="space-y-4">
-              {storeLocations.map((location) => (
-                <div
-                  key={location.id}
-                  className="bg-background rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer border border-transparent hover:border-secondary/20"
-                  onClick={() => setSelectedLocation(location.id)}
-                >
-                  <div className="flex items-start justify-between mb-3">
-                    <h4 className="text-lg font-semibold text-primary">{location.name}</h4>
-                    <span className="text-xs bg-secondary/10 text-secondary px-2 py-1 rounded-full">
-                      {location.type}
-                    </span>
-                  </div>
-                  
-                  <div className="flex items-start text-muted-foreground mb-3">
-                    <MapPin size={16} className="mr-2 mt-1 flex-shrink-0" />
-                    <span className="text-sm">{location.address}</span>
-                  </div>
-                  
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center text-muted-foreground">
-                      <Phone size={16} className="mr-2" />
-                      <span className="text-sm">{location.phone}</span>
+            {loading ? (
+              <div className="text-center py-8">Loading store locations...</div>
+            ) : (
+              <div className="space-y-4">
+                {storeLocations.map((location) => (
+                  <div
+                    key={location.id}
+                    className="bg-background rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer border border-transparent hover:border-secondary/20"
+                    onClick={() => setSelectedLocation(location.id)}
+                  >
+                    <div className="flex items-start justify-between mb-3">
+                      <h4 className="text-lg font-semibold text-primary">{location.name}</h4>
+                      <span className="text-xs bg-secondary/10 text-secondary px-2 py-1 rounded-full">
+                        {location.store_type}
+                      </span>
                     </div>
-                    <button className="text-secondary hover:text-secondary/80 transition-colors">
-                      <ExternalLink size={16} />
-                    </button>
+                    
+                    <div className="flex items-start text-muted-foreground mb-3">
+                      <MapPin size={16} className="mr-2 mt-1 flex-shrink-0" />
+                      <span className="text-sm">{location.address}</span>
+                    </div>
+                    
+                    {location.phone && (
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center text-muted-foreground">
+                          <Phone size={16} className="mr-2" />
+                          <span className="text-sm">{location.phone}</span>
+                        </div>
+                        <button className="text-secondary hover:text-secondary/80 transition-colors">
+                          <ExternalLink size={16} />
+                        </button>
+                      </div>
+                    )}
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
 
             {/* Contact for Partnership */}
             <div className="mt-8 bg-gradient-to-r from-primary to-secondary p-6 rounded-xl text-primary-foreground">
