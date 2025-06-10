@@ -3,12 +3,11 @@ import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { toast } from 'sonner';
-import { Plus, Save, Trash2, Upload, MoveUp, MoveDown } from 'lucide-react';
+import { Plus, Save, Trash2, MoveUp, MoveDown } from 'lucide-react';
 
 interface MarketingItem {
   id?: string;
@@ -40,11 +39,11 @@ const MarketingEditor = () => {
 
   const fetchMarketingContent = async () => {
     try {
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from('content_sections')
         .select('content')
         .eq('section_name', 'marketing_section')
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
 
@@ -128,20 +127,40 @@ const MarketingEditor = () => {
   const handleSave = async () => {
     setSaving(true);
     try {
-      const { error } = await (supabase as any)
+      // First check if record exists
+      const { data: existing } = await supabase
         .from('content_sections')
-        .upsert({
-          section_name: 'marketing_section',
-          content: content,
-          updated_at: new Date().toISOString()
-        });
+        .select('id')
+        .eq('section_name', 'marketing_section')
+        .maybeSingle();
 
-      if (error) throw error;
+      if (existing) {
+        // Update existing record
+        const { error } = await supabase
+          .from('content_sections')
+          .update({
+            content: content,
+            updated_at: new Date().toISOString()
+          })
+          .eq('section_name', 'marketing_section');
+
+        if (error) throw error;
+      } else {
+        // Insert new record
+        const { error } = await supabase
+          .from('content_sections')
+          .insert({
+            section_name: 'marketing_section',
+            content: content
+          });
+
+        if (error) throw error;
+      }
 
       toast.success('Marketing section updated successfully');
     } catch (error) {
       console.error('Error saving marketing content:', error);
-      toast.error('Failed to save changes');
+      toast.error('Failed to save changes: ' + (error as any).message);
     } finally {
       setSaving(false);
     }

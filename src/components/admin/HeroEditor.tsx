@@ -32,11 +32,11 @@ const HeroEditor = () => {
 
   const fetchHeroContent = async () => {
     try {
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from('content_sections')
         .select('content')
         .eq('section_name', 'hero')
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
 
@@ -83,20 +83,40 @@ const HeroEditor = () => {
   const handleSave = async () => {
     setSaving(true);
     try {
-      const { error } = await (supabase as any)
+      // First check if record exists
+      const { data: existing } = await supabase
         .from('content_sections')
-        .upsert({
-          section_name: 'hero',
-          content: content,
-          updated_at: new Date().toISOString()
-        });
+        .select('id')
+        .eq('section_name', 'hero')
+        .maybeSingle();
 
-      if (error) throw error;
+      if (existing) {
+        // Update existing record
+        const { error } = await supabase
+          .from('content_sections')
+          .update({
+            content: content,
+            updated_at: new Date().toISOString()
+          })
+          .eq('section_name', 'hero');
+
+        if (error) throw error;
+      } else {
+        // Insert new record
+        const { error } = await supabase
+          .from('content_sections')
+          .insert({
+            section_name: 'hero',
+            content: content
+          });
+
+        if (error) throw error;
+      }
 
       toast.success('Hero section updated successfully');
     } catch (error) {
       console.error('Error saving hero content:', error);
-      toast.error('Failed to save changes');
+      toast.error('Failed to save changes: ' + (error as any).message);
     } finally {
       setSaving(false);
     }

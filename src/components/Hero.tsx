@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { ArrowDown, MapPin, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -28,17 +27,18 @@ const Hero = () => {
 
   const fetchHeroContent = async () => {
     try {
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from('content_sections')
         .select('content')
         .eq('section_name', 'hero')
-        .single();
+        .maybeSingle();
 
       if (!error && data?.content) {
         setContent(data.content as HeroContent);
       }
     } catch (error) {
       console.error('Error fetching hero content:', error);
+      // Keep fallback content if fetch fails
     }
   };
 

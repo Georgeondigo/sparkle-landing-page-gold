@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Star } from 'lucide-react';
@@ -54,17 +53,18 @@ const FeaturedProducts = () => {
 
   const fetchProductsContent = async () => {
     try {
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from('content_sections')
         .select('content')
         .eq('section_name', 'featured_products')
-        .single();
+        .maybeSingle();
 
       if (!error && data?.content) {
         setContent(data.content as ProductsContent);
       }
     } catch (error) {
       console.error('Error fetching products content:', error);
+      // Keep fallback content if fetch fails
     }
   };
 

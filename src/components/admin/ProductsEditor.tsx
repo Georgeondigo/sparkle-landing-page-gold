@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
-import { Plus, Save, Trash2, Upload } from 'lucide-react';
+import { Plus, Save, Trash2, Upload, MoveUp, MoveDown } from 'lucide-react';
 
 interface Product {
   name: string;
@@ -24,8 +24,8 @@ interface ProductsContent {
 
 const ProductsEditor = () => {
   const [content, setContent] = useState<ProductsContent>({
-    title: '',
-    description: '',
+    title: 'Featured Products',
+    description: 'Discover our bestselling microfiber cloths, trusted by thousands of customers',
     products: []
   });
   const [loading, setLoading] = useState(true);
@@ -37,11 +37,11 @@ const ProductsEditor = () => {
 
   const fetchProductsContent = async () => {
     try {
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from('content_sections')
         .select('content')
         .eq('section_name', 'featured_products')
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
 
@@ -74,7 +74,6 @@ const ProductsEditor = () => {
       const updatedProducts = [...content.products];
       updatedProducts[index].image = publicUrl;
       setContent(prev => ({ ...prev, products: updatedProducts }));
-      
       toast.success('Image uploaded successfully');
     } catch (error) {
       console.error('Error uploading image:', error);
@@ -88,7 +87,7 @@ const ProductsEditor = () => {
       description: '',
       image: '',
       rating: 5,
-      price: '₹'
+      price: ''
     };
     setContent(prev => ({
       ...prev,
@@ -103,29 +102,58 @@ const ProductsEditor = () => {
     }));
   };
 
-  const updateProduct = (index: number, field: keyof Product, value: string | number) => {
+  const updateProduct = (index: number, field: keyof Product, value: any) => {
     const updatedProducts = [...content.products];
     updatedProducts[index] = { ...updatedProducts[index], [field]: value };
+    setContent(prev => ({ ...prev, products: updatedProducts }));
+  };
+
+  const moveProduct = (index: number, direction: 'up' | 'down') => {
+    const newIndex = direction === 'up' ? index - 1 : index + 1;
+    if (newIndex < 0 || newIndex >= content.products.length) return;
+
+    const updatedProducts = [...content.products];
+    [updatedProducts[index], updatedProducts[newIndex]] = [updatedProducts[newIndex], updatedProducts[index]];
     setContent(prev => ({ ...prev, products: updatedProducts }));
   };
 
   const handleSave = async () => {
     setSaving(true);
     try {
-      const { error } = await (supabase as any)
+      // First check if record exists
+      const { data: existing } = await supabase
         .from('content_sections')
-        .upsert({
-          section_name: 'featured_products',
-          content: content,
-          updated_at: new Date().toISOString()
-        });
+        .select('id')
+        .eq('section_name', 'featured_products')
+        .maybeSingle();
 
-      if (error) throw error;
+      if (existing) {
+        // Update existing record
+        const { error } = await supabase
+          .from('content_sections')
+          .update({
+            content: content,
+            updated_at: new Date().toISOString()
+          })
+          .eq('section_name', 'featured_products');
 
-      toast.success('Products updated successfully');
+        if (error) throw error;
+      } else {
+        // Insert new record
+        const { error } = await supabase
+          .from('content_sections')
+          .insert({
+            section_name: 'featured_products',
+            content: content
+          });
+
+        if (error) throw error;
+      }
+
+      toast.success('Products section updated successfully');
     } catch (error) {
       console.error('Error saving products:', error);
-      toast.error('Failed to save changes');
+      toast.error('Failed to save changes: ' + (error as any).message);
     } finally {
       setSaving(false);
     }
@@ -169,13 +197,31 @@ const ProductsEditor = () => {
           <Card key={index}>
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle className="text-base">Product {index + 1}</CardTitle>
-              <Button
-                onClick={() => removeProduct(index)}
-                variant="outline"
-                size="sm"
-              >
-                <Trash2 size={16} />
-              </Button>
+              <div className="flex items-center space-x-2">
+                <Button
+                  onClick={() => moveProduct(index, 'up')}
+                  variant="outline"
+                  size="sm"
+                  disabled={index === 0}
+                >
+                  <MoveUp size={16} />
+                </Button>
+                <Button
+                  onClick={() => moveProduct(index, 'down')}
+                  variant="outline"
+                  size="sm"
+                  disabled={index === content.products.length - 1}
+                >
+                  <MoveDown size={16} />
+                </Button>
+                <Button
+                  onClick={() => removeProduct(index)}
+                  variant="outline"
+                  size="sm"
+                >
+                  <Trash2 size={16} />
+                </Button>
+              </div>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid md:grid-cols-2 gap-4">
@@ -192,7 +238,7 @@ const ProductsEditor = () => {
                   <Input
                     value={product.price}
                     onChange={(e) => updateProduct(index, 'price', e.target.value)}
-                    placeholder="₹299"
+                    placeholder="e.g., ₹299"
                   />
                 </div>
               </div>
@@ -203,7 +249,7 @@ const ProductsEditor = () => {
                   value={product.description}
                   onChange={(e) => updateProduct(index, 'description', e.target.value)}
                   placeholder="Product description"
-                  rows={2}
+                  rows={3}
                 />
               </div>
 
@@ -220,7 +266,7 @@ const ProductsEditor = () => {
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium mb-2 block">Product Image</label>
+                  <label className="text-sm font-medium mb-2 block">Upload Image</label>
                   <Input
                     type="file"
                     accept="image/*"
@@ -233,11 +279,14 @@ const ProductsEditor = () => {
               </div>
 
               {product.image && (
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  className="w-32 h-32 object-cover rounded-lg"
-                />
+                <div className="mt-4">
+                  <label className="text-sm font-medium mb-2 block">Preview</label>
+                  <img
+                    src={product.image}
+                    alt={product.name}
+                    className="w-32 h-32 object-cover rounded-lg"
+                  />
+                </div>
               )}
             </CardContent>
           </Card>
