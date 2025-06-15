@@ -1,11 +1,11 @@
 
 import React from 'react';
-import DynamicHeader from '../components/DynamicHeader';
+import Header from '../components/Header';
 import Hero from '../components/Hero';
-import EnhancedFeaturedProducts from '../components/EnhancedFeaturedProducts';
-import EditableProductHighlights from '../components/EditableProductHighlights';
+import FeaturedProducts from '../components/FeaturedProducts';
+import ProductHighlights from '../components/ProductHighlights';
 import MarketingSlider from '../components/MarketingSlider';
-import EditableAbout from '../components/EditableAbout';
+import About from '../components/About';
 import Testimonials from '../components/Testimonials';
 import FAQ from '../components/FAQ';
 import Newsletter from '../components/Newsletter';
@@ -18,13 +18,13 @@ import WhatsAppFloat from '../components/WhatsAppFloat';
 const Index = () => {
   return (
     <div className="min-h-screen bg-background">
-      <DynamicHeader />
+      <Header />
       <main>
         <Hero />
-        <EnhancedFeaturedProducts />
-        <EditableProductHighlights />
+        <FeaturedProducts />
+        <ProductHighlights />
         <MarketingSlider />
-        <EditableAbout />
+        <About />
         <Testimonials />
         <FAQ />
         <Newsletter />
