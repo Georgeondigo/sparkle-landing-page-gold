@@ -30,7 +30,10 @@ const SiteSettingsEditor = () => {
         .maybeSingle();
 
       if (!error && data?.setting_value) {
-        setLogo(data.setting_value as LogoSetting);
+        const logoData = data.setting_value as unknown;
+        if (logoData && typeof logoData === 'object' && 'url' in logoData && 'alt' in logoData) {
+          setLogo(logoData as LogoSetting);
+        }
       }
     } catch (error) {
       console.error('Error fetching site settings:', error);
