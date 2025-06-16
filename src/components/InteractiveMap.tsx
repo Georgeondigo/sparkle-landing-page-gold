@@ -30,7 +30,17 @@ const InteractiveMap: React.FC<InteractiveMapProps> = ({ locations, apiKey }) =>
   const [userApiKey, setUserApiKey] = useState(apiKey || '');
   const [isLoading, setIsLoading] = useState(false);
   const [mapLoaded, setMapLoaded] = useState(false);
-  const [showApiKeyInput, setShowApiKeyInput] = useState(!apiKey);
+  const [showApiKeyInput, setShowApiKeyInput] = useState(false);
+
+  // Update userApiKey when apiKey prop changes
+  useEffect(() => {
+    if (apiKey) {
+      setUserApiKey(apiKey);
+      setShowApiKeyInput(false);
+    } else {
+      setShowApiKeyInput(true);
+    }
+  }, [apiKey]);
 
   const loadMap = async (key: string) => {
     if (!key.trim()) {
@@ -52,8 +62,12 @@ const InteractiveMap: React.FC<InteractiveMapProps> = ({ locations, apiKey }) =>
       await loader.load();
       console.log('Google Maps API loaded successfully');
       
+      // Wait a bit for the DOM to be ready
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
       if (!mapRef.current) {
         console.error('Map container not found');
+        toast.error('Map container not ready. Please try again.');
         return;
       }
 
@@ -63,7 +77,7 @@ const InteractiveMap: React.FC<InteractiveMapProps> = ({ locations, apiKey }) =>
 
       // Create map centered on India (or first location if available)
       const defaultCenter = locations.length > 0 && locations[0].latitude && locations[0].longitude
-        ? { lat: locations[0].latitude, lng: locations[0].longitude }
+        ? { lat: Number(locations[0].latitude), lng: Number(locations[0].longitude) }
         : { lat: 20.5937, lng: 78.9629 }; // Center of India
 
       console.log('Creating map with center:', defaultCenter);
@@ -172,13 +186,16 @@ const InteractiveMap: React.FC<InteractiveMapProps> = ({ locations, apiKey }) =>
 
   // Auto-load map if API key is provided
   useEffect(() => {
-    if (apiKey && mapRef.current && !mapLoaded) {
+    if (apiKey && !mapLoaded && !isLoading) {
       console.log('Auto-loading map with provided API key');
-      loadMap(apiKey);
+      // Small delay to ensure DOM is ready
+      setTimeout(() => {
+        loadMap(apiKey);
+      }, 200);
     }
-  }, [apiKey, mapLoaded]);
+  }, [apiKey, mapLoaded, isLoading]);
 
-  if (showApiKeyInput || !mapLoaded) {
+  if (showApiKeyInput || (!apiKey && !mapLoaded)) {
     return (
       <Card className="w-full h-96">
         <CardContent className="flex items-center justify-center h-full p-6">
@@ -191,26 +208,28 @@ const InteractiveMap: React.FC<InteractiveMapProps> = ({ locations, apiKey }) =>
             {!mapLoaded && (
               <>
                 <p className="text-muted-foreground mb-6">
-                  Enter your Google Maps API key to enable the interactive map with store locations
+                  {apiKey ? 'Loading interactive map...' : 'Enter your Google Maps API key to enable the interactive map with store locations'}
                 </p>
                 
-                <div className="space-y-4">
-                  <Input
-                    type="password"
-                    placeholder="Enter Google Maps API Key"
-                    value={userApiKey}
-                    onChange={(e) => setUserApiKey(e.target.value)}
-                    className="w-full"
-                  />
-                  
-                  <Button 
-                    onClick={handleLoadMap}
-                    disabled={isLoading || !userApiKey.trim()}
-                    className="w-full"
-                  >
-                    {isLoading ? 'Loading Map...' : 'Load Interactive Map'}
-                  </Button>
-                </div>
+                {!apiKey && (
+                  <div className="space-y-4">
+                    <Input
+                      type="password"
+                      placeholder="Enter Google Maps API Key"
+                      value={userApiKey}
+                      onChange={(e) => setUserApiKey(e.target.value)}
+                      className="w-full"
+                    />
+                    
+                    <Button 
+                      onClick={handleLoadMap}
+                      disabled={isLoading || !userApiKey.trim()}
+                      className="w-full"
+                    >
+                      {isLoading ? 'Loading Map...' : 'Load Interactive Map'}
+                    </Button>
+                  </div>
+                )}
                 
                 <div className="mt-6 p-4 bg-blue-50 rounded-lg text-left">
                   <div className="flex items-start">

@@ -5,11 +5,39 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
 import { MapPin, Eye, EyeOff, ExternalLink } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 
 const MapSettingsEditor = () => {
   const [apiKey, setApiKey] = useState('');
   const [showApiKey, setShowApiKey] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchApiKey();
+  }, []);
+
+  const fetchApiKey = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('site_settings')
+        .select('setting_value')
+        .eq('setting_key', 'google_maps_api_key')
+        .single();
+
+      if (error && error.code !== 'PGRST116') {
+        throw error;
+      }
+
+      if (data) {
+        setApiKey(data.setting_value || '');
+      }
+    } catch (error) {
+      console.error('Error fetching API key:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSave = async () => {
     if (!apiKey.trim()) {
@@ -19,12 +47,15 @@ const MapSettingsEditor = () => {
 
     setSaving(true);
     try {
-      // In a real implementation, you would save this to Supabase Edge Function Secrets
-      // For now, we'll show instructions to the user
-      toast.info('API key would be saved to Supabase Edge Function Secrets in production');
-      
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const { error } = await supabase
+        .from('site_settings')
+        .upsert({
+          setting_key: 'google_maps_api_key',
+          setting_value: apiKey.trim(),
+          updated_at: new Date().toISOString()
+        });
+
+      if (error) throw error;
       
       toast.success('Google Maps API key saved successfully');
     } catch (error) {
@@ -34,6 +65,10 @@ const MapSettingsEditor = () => {
       setSaving(false);
     }
   };
+
+  if (loading) {
+    return <div className="flex items-center justify-center py-8">Loading...</div>;
+  }
 
   return (
     <div className="space-y-6">
@@ -68,7 +103,7 @@ const MapSettingsEditor = () => {
               </Button>
             </div>
             <p className="text-sm text-muted-foreground mt-2">
-              This API key will be securely stored in Supabase Edge Function Secrets
+              This API key will be stored securely in your Supabase database
             </p>
           </div>
 
@@ -113,8 +148,8 @@ const MapSettingsEditor = () => {
           <div className="space-y-3">
             <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
               <span className="font-medium">Interactive Map</span>
-              <span className="text-sm px-2 py-1 bg-amber-100 text-amber-800 rounded">
-                Awaiting API Key
+              <span className={`text-sm px-2 py-1 rounded ${apiKey ? 'bg-green-100 text-green-800' : 'bg-amber-100 text-amber-800'}`}>
+                {apiKey ? 'API Key Configured' : 'Awaiting API Key'}
               </span>
             </div>
             <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
@@ -125,8 +160,8 @@ const MapSettingsEditor = () => {
             </div>
             <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
               <span className="font-medium">Location Markers</span>
-              <span className="text-sm px-2 py-1 bg-amber-100 text-amber-800 rounded">
-                Awaiting API Key
+              <span className={`text-sm px-2 py-1 rounded ${apiKey ? 'bg-green-100 text-green-800' : 'bg-amber-100 text-amber-800'}`}>
+                {apiKey ? 'Ready' : 'Awaiting API Key'}
               </span>
             </div>
           </div>

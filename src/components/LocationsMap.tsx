@@ -24,9 +24,32 @@ const LocationsMap = () => {
 
   useEffect(() => {
     fetchStoreLocations();
-    // In a real implementation, you would fetch the API key from Supabase Edge Function Secrets
-    // For now, the InteractiveMap component will handle the API key input
+    fetchGoogleMapsApiKey();
   }, []);
+
+  const fetchGoogleMapsApiKey = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('site_settings')
+        .select('setting_value')
+        .eq('setting_key', 'google_maps_api_key')
+        .single();
+
+      if (error && error.code !== 'PGRST116') {
+        console.error('Error fetching Google Maps API key:', error);
+        return;
+      }
+
+      if (data && data.setting_value) {
+        setGoogleMapsApiKey(data.setting_value);
+        console.log('Google Maps API key fetched successfully');
+      } else {
+        console.log('No Google Maps API key found in database');
+      }
+    } catch (error) {
+      console.error('Error fetching Google Maps API key:', error);
+    }
+  };
 
   const fetchStoreLocations = async () => {
     try {
@@ -106,22 +129,24 @@ const LocationsMap = () => {
               apiKey={googleMapsApiKey}
             />
             
-            {/* API Key Instructions */}
-            <div className="mt-4 p-4 bg-background rounded-xl border">
-              <div className="flex items-start">
-                <Settings className="text-primary mr-3 flex-shrink-0 mt-1" size={20} />
-                <div className="text-sm">
-                  <p className="font-medium text-primary mb-1">
-                    To enable the interactive map:
-                  </p>
-                  <ol className="list-decimal list-inside space-y-1 text-muted-foreground">
-                    <li>Get a Google Maps API key from <a href="https://console.cloud.google.com/google/maps-apis" target="_blank" rel="noopener noreferrer" className="text-secondary hover:underline">Google Cloud Console</a></li>
-                    <li>Enable the Maps JavaScript API</li>
-                    <li>Enter your API key in the map interface above</li>
-                  </ol>
+            {/* API Key Instructions - only show if no API key */}
+            {!googleMapsApiKey && (
+              <div className="mt-4 p-4 bg-background rounded-xl border">
+                <div className="flex items-start">
+                  <Settings className="text-primary mr-3 flex-shrink-0 mt-1" size={20} />
+                  <div className="text-sm">
+                    <p className="font-medium text-primary mb-1">
+                      To enable the interactive map:
+                    </p>
+                    <ol className="list-decimal list-inside space-y-1 text-muted-foreground">
+                      <li>Get a Google Maps API key from <a href="https://console.cloud.google.com/google/maps-apis" target="_blank" rel="noopener noreferrer" className="text-secondary hover:underline">Google Cloud Console</a></li>
+                      <li>Enable the Maps JavaScript API</li>
+                      <li>Configure your API key in the admin dashboard under Maps settings</li>
+                    </ol>
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
           </div>
 
           {/* Store Locations List */}
