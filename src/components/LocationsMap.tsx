@@ -1,7 +1,9 @@
 
 import React, { useState, useEffect } from 'react';
-import { MapPin, Store, Phone, ExternalLink } from 'lucide-react';
+import { MapPin, Store, Phone, ExternalLink, Settings } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import InteractiveMap from './InteractiveMap';
+import { Button } from '@/components/ui/button';
 
 interface StoreLocation {
   id: string;
@@ -18,9 +20,12 @@ const LocationsMap = () => {
   const [selectedLocation, setSelectedLocation] = useState<string | null>(null);
   const [storeLocations, setStoreLocations] = useState<StoreLocation[]>([]);
   const [loading, setLoading] = useState(true);
+  const [googleMapsApiKey, setGoogleMapsApiKey] = useState<string>('');
 
   useEffect(() => {
     fetchStoreLocations();
+    // In a real implementation, you would fetch the API key from Supabase Edge Function Secrets
+    // For now, the InteractiveMap component will handle the API key input
   }, []);
 
   const fetchStoreLocations = async () => {
@@ -44,6 +49,8 @@ const LocationsMap = () => {
           address: "123 Shopping Mall, Bandra West, Mumbai 400050",
           phone: "+91 98765 43210",
           store_type: "Retail Partner",
+          latitude: 19.0596,
+          longitude: 72.8295,
           is_active: true
         },
         {
@@ -52,6 +59,8 @@ const LocationsMap = () => {
           address: "456 Market Street, Connaught Place, New Delhi 110001",
           phone: "+91 98765 43211",
           store_type: "Authorized Dealer",
+          latitude: 28.6139,
+          longitude: 77.2090,
           is_active: true
         },
         {
@@ -60,12 +69,19 @@ const LocationsMap = () => {
           address: "789 Commercial Complex, MG Road, Bangalore 560001",
           phone: "+91 98765 43212",
           store_type: "Retail Partner",
+          latitude: 12.9716,
+          longitude: 77.5946,
           is_active: true
         }
       ]);
     } finally {
       setLoading(false);
     }
+  };
+
+  const openInGoogleMaps = (location: StoreLocation) => {
+    const query = encodeURIComponent(`${location.name} ${location.address}`);
+    window.open(`https://www.google.com/maps/search/?api=1&query=${query}`, '_blank');
   };
 
   return (
@@ -83,35 +99,27 @@ const LocationsMap = () => {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-          {/* Map Container */}
+          {/* Interactive Map */}
           <div className="order-2 lg:order-1">
-            <div className="bg-background rounded-2xl shadow-lg p-6 h-96">
-              {/* Placeholder for Google Maps */}
-              <div className="w-full h-full bg-muted/50 rounded-xl flex items-center justify-center relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-secondary/10"></div>
-                <div className="text-center z-10">
-                  <MapPin className="text-secondary mx-auto mb-4" size={48} />
-                  <h3 className="text-xl font-semibold text-primary mb-2">Interactive Map</h3>
-                  <p className="text-muted-foreground mb-4">
-                    Google Maps integration will be added here
+            <InteractiveMap 
+              locations={storeLocations} 
+              apiKey={googleMapsApiKey}
+            />
+            
+            {/* API Key Instructions */}
+            <div className="mt-4 p-4 bg-background rounded-xl border">
+              <div className="flex items-start">
+                <Settings className="text-primary mr-3 flex-shrink-0 mt-1" size={20} />
+                <div className="text-sm">
+                  <p className="font-medium text-primary mb-1">
+                    To enable the interactive map:
                   </p>
-                  <div className="text-sm text-muted-foreground bg-background/80 px-4 py-2 rounded-lg inline-block">
-                    <strong>Setup Instructions:</strong><br />
-                    Add your Google Maps API key to enable interactive map functionality
-                  </div>
+                  <ol className="list-decimal list-inside space-y-1 text-muted-foreground">
+                    <li>Get a Google Maps API key from <a href="https://console.cloud.google.com/google/maps-apis" target="_blank" rel="noopener noreferrer" className="text-secondary hover:underline">Google Cloud Console</a></li>
+                    <li>Enable the Maps JavaScript API</li>
+                    <li>Enter your API key in the map interface above</li>
+                  </ol>
                 </div>
-                
-                {/* Simulated map pins based on store locations */}
-                {storeLocations.slice(0, 3).map((_, index) => (
-                  <div 
-                    key={index}
-                    className={`absolute w-4 h-4 bg-secondary rounded-full animate-pulse ${
-                      index === 0 ? 'top-1/4 left-1/3' :
-                      index === 1 ? 'top-1/2 right-1/4' :
-                      'bottom-1/3 left-1/2'
-                    }`}
-                  ></div>
-                ))}
               </div>
             </div>
           </div>
@@ -145,17 +153,26 @@ const LocationsMap = () => {
                       <span className="text-sm">{location.address}</span>
                     </div>
                     
-                    {location.phone && (
-                      <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between">
+                      {location.phone && (
                         <div className="flex items-center text-muted-foreground">
                           <Phone size={16} className="mr-2" />
                           <span className="text-sm">{location.phone}</span>
                         </div>
-                        <button className="text-secondary hover:text-secondary/80 transition-colors">
-                          <ExternalLink size={16} />
-                        </button>
-                      </div>
-                    )}
+                      )}
+                      <Button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          openInGoogleMaps(location);
+                        }}
+                        variant="outline"
+                        size="sm"
+                        className="ml-auto"
+                      >
+                        <ExternalLink size={16} className="mr-1" />
+                        View on Maps
+                      </Button>
+                    </div>
                   </div>
                 ))}
               </div>

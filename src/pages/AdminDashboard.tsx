@@ -1,11 +1,24 @@
 
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { LogOut, Home, Users, MapPin, MessageSquare, HelpCircle, Settings, Image, Megaphone } from 'lucide-react';
+import { 
+  Settings, 
+  FileText, 
+  MessageSquare, 
+  MapPin, 
+  Phone, 
+  ShoppingBag,
+  Star,
+  HelpCircle,
+  Map
+} from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
+import { useNavigate } from 'react-router-dom';
+
+// Import admin components
 import HeroEditor from '@/components/admin/HeroEditor';
 import ProductsEditor from '@/components/admin/ProductsEditor';
 import TestimonialsEditor from '@/components/admin/TestimonialsEditor';
@@ -13,89 +26,38 @@ import FAQEditor from '@/components/admin/FAQEditor';
 import LocationsEditor from '@/components/admin/LocationsEditor';
 import ContactEditor from '@/components/admin/ContactEditor';
 import MarketingEditor from '@/components/admin/MarketingEditor';
+import MapSettingsEditor from '@/components/admin/MapSettingsEditor';
 
 const AdminDashboard = () => {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState('hero');
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (!session) {
-        navigate('/admin/auth');
-        return;
-      }
-
-      const { data: profile, error } = await (supabase as any)
-        .from('profiles')
-        .select('*')
-        .eq('id', session.user.id)
-        .single();
-
-      if (error || !profile || profile.role !== 'admin') {
-        navigate('/admin/auth');
-        return;
-      }
-
-      setUser(session.user);
-      setLoading(false);
-    };
-
-    checkAuth();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'SIGNED_OUT') {
-        navigate('/admin/auth');
-      }
-    });
-
-    return () => subscription.unsubscribe();
-  }, [navigate]);
-
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    navigate('/admin/auth');
+  const handleSignOut = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      toast.error('Error signing out');
+    } else {
+      toast.success('Signed out successfully');
+      navigate('/admin');
+    }
   };
-
-  const goToSite = () => {
-    navigate('/');
-  };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading admin dashboard...</p>
-        </div>
-      </div>
-    );
-  }
 
   return (
-    <div className="min-h-screen bg-muted/30">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="bg-background border-b shadow-sm">
+      <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <h1 className="text-2xl font-serif font-bold text-primary">
-                Tiffany Sparkles CMS
-              </h1>
-              <span className="text-sm text-muted-foreground">
-                Welcome, {user?.email}
-              </span>
+            <div>
+              <h1 className="text-2xl font-bold text-primary">Tiffany Sparkles Admin</h1>
+              <p className="text-muted-foreground">Content Management System</p>
             </div>
-            <div className="flex items-center space-x-2">
-              <Button variant="outline" onClick={goToSite}>
-                <Home className="mr-2" size={16} />
+            <div className="flex items-center space-x-4">
+              <Button variant="outline" onClick={() => navigate('/')}>
                 View Site
               </Button>
-              <Button variant="outline" onClick={handleLogout}>
-                <LogOut className="mr-2" size={16} />
-                Logout
+              <Button variant="outline" onClick={handleSignOut}>
+                Sign Out
               </Button>
             </div>
           </div>
@@ -103,43 +65,50 @@ const AdminDashboard = () => {
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">
-        <Tabs defaultValue="hero" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-7">
-            <TabsTrigger value="hero" className="flex items-center space-x-2">
-              <Image size={16} />
+      <div className="container mx-auto px-4 py-8">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
+          <TabsList className="grid w-full grid-cols-4 lg:grid-cols-8">
+            <TabsTrigger value="hero" className="flex items-center gap-2">
+              <FileText size={16} />
               <span className="hidden sm:inline">Hero</span>
             </TabsTrigger>
-            <TabsTrigger value="products" className="flex items-center space-x-2">
-              <Users size={16} />
+            <TabsTrigger value="products" className="flex items-center gap-2">
+              <ShoppingBag size={16} />
               <span className="hidden sm:inline">Products</span>
             </TabsTrigger>
-            <TabsTrigger value="marketing" className="flex items-center space-x-2">
-              <Megaphone size={16} />
+            <TabsTrigger value="marketing" className="flex items-center gap-2">
+              <Settings size={16} />
               <span className="hidden sm:inline">Marketing</span>
             </TabsTrigger>
-            <TabsTrigger value="testimonials" className="flex items-center space-x-2">
-              <MessageSquare size={16} />
+            <TabsTrigger value="testimonials" className="flex items-center gap-2">
+              <Star size={16} />
               <span className="hidden sm:inline">Reviews</span>
             </TabsTrigger>
-            <TabsTrigger value="faq" className="flex items-center space-x-2">
+            <TabsTrigger value="faq" className="flex items-center gap-2">
               <HelpCircle size={16} />
               <span className="hidden sm:inline">FAQ</span>
             </TabsTrigger>
-            <TabsTrigger value="locations" className="flex items-center space-x-2">
+            <TabsTrigger value="locations" className="flex items-center gap-2">
               <MapPin size={16} />
-              <span className="hidden sm:inline">Stores</span>
+              <span className="hidden sm:inline">Locations</span>
             </TabsTrigger>
-            <TabsTrigger value="contact" className="flex items-center space-x-2">
-              <Settings size={16} />
+            <TabsTrigger value="maps" className="flex items-center gap-2">
+              <Map size={16} />
+              <span className="hidden sm:inline">Maps</span>
+            </TabsTrigger>
+            <TabsTrigger value="contact" className="flex items-center gap-2">
+              <Phone size={16} />
               <span className="hidden sm:inline">Contact</span>
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="hero">
+          <TabsContent value="hero" className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle>Hero Section</CardTitle>
+                <CardTitle className="flex items-center">
+                  <FileText className="mr-2" size={20} />
+                  Hero Section Management
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <HeroEditor />
@@ -147,10 +116,13 @@ const AdminDashboard = () => {
             </Card>
           </TabsContent>
 
-          <TabsContent value="products">
+          <TabsContent value="products" className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle>Featured Products</CardTitle>
+                <CardTitle className="flex items-center">
+                  <ShoppingBag className="mr-2" size={20} />
+                  Product Management
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <ProductsEditor />
@@ -158,10 +130,13 @@ const AdminDashboard = () => {
             </Card>
           </TabsContent>
 
-          <TabsContent value="marketing">
+          <TabsContent value="marketing" className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle>Marketing Showcase</CardTitle>
+                <CardTitle className="flex items-center">
+                  <Settings className="mr-2" size={20} />
+                  Marketing Slider Management
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <MarketingEditor />
@@ -169,10 +144,13 @@ const AdminDashboard = () => {
             </Card>
           </TabsContent>
 
-          <TabsContent value="testimonials">
+          <TabsContent value="testimonials" className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle>Customer Testimonials</CardTitle>
+                <CardTitle className="flex items-center">
+                  <Star className="mr-2" size={20} />
+                  Customer Testimonials
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <TestimonialsEditor />
@@ -180,10 +158,13 @@ const AdminDashboard = () => {
             </Card>
           </TabsContent>
 
-          <TabsContent value="faq">
+          <TabsContent value="faq" className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle>Frequently Asked Questions</CardTitle>
+                <CardTitle className="flex items-center">
+                  <HelpCircle className="mr-2" size={20} />
+                  FAQ Management
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <FAQEditor />
@@ -191,10 +172,13 @@ const AdminDashboard = () => {
             </Card>
           </TabsContent>
 
-          <TabsContent value="locations">
+          <TabsContent value="locations" className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle>Store Locations</CardTitle>
+                <CardTitle className="flex items-center">
+                  <MapPin className="mr-2" size={20} />
+                  Store Locations
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <LocationsEditor />
@@ -202,10 +186,27 @@ const AdminDashboard = () => {
             </Card>
           </TabsContent>
 
-          <TabsContent value="contact">
+          <TabsContent value="maps" className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle>Contact Settings</CardTitle>
+                <CardTitle className="flex items-center">
+                  <Map className="mr-2" size={20} />
+                  Google Maps Integration
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <MapSettingsEditor />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="contact" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <Phone className="mr-2" size={20} />
+                  Contact Information
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <ContactEditor />
@@ -213,7 +214,7 @@ const AdminDashboard = () => {
             </Card>
           </TabsContent>
         </Tabs>
-      </main>
+      </div>
     </div>
   );
 };
