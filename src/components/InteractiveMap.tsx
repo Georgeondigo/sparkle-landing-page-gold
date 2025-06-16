@@ -47,7 +47,7 @@ const InteractiveMap: React.FC<InteractiveMapProps> = ({ locations, apiKey }) =>
         libraries: ['places', 'marker']
       });
 
-      const google = await loader.load();
+      await loader.load();
       
       if (!mapRef.current) return;
 
