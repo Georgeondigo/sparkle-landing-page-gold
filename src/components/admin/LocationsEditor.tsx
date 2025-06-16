@@ -24,10 +24,34 @@ const LocationsEditor = () => {
   const [locations, setLocations] = useState<StoreLocation[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [googleMapsApiKey, setGoogleMapsApiKey] = useState<string>('');
+  const [geocodingStates, setGeocodingStates] = useState<{ [key: number]: boolean }>({});
 
   useEffect(() => {
     fetchLocations();
+    fetchGoogleMapsApiKey();
   }, []);
+
+  const fetchGoogleMapsApiKey = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('site_settings')
+        .select('setting_value')
+        .eq('setting_key', 'google_maps_api_key')
+        .single();
+
+      if (error && error.code !== 'PGRST116') {
+        console.error('Error fetching Google Maps API key:', error);
+        return;
+      }
+
+      if (data && data.setting_value) {
+        setGoogleMapsApiKey(String(data.setting_value));
+      }
+    } catch (error) {
+      console.error('Error fetching Google Maps API key:', error);
+    }
+  };
 
   const fetchLocations = async () => {
     try {
@@ -95,12 +119,45 @@ const LocationsEditor = () => {
       return;
     }
 
+    if (!googleMapsApiKey) {
+      toast.error('Google Maps API key not configured. Please configure it in the Maps settings.');
+      return;
+    }
+
+    setGeocodingStates(prev => ({ ...prev, [index]: true }));
+
     try {
-      // This is a simple geocoding example - in production you'd use Google Maps API
-      toast.info('Geocoding feature requires Google Maps API integration');
+      const response = await fetch(
+        `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(location.address)}&key=${googleMapsApiKey}`
+      );
+
+      if (!response.ok) {
+        throw new Error('Geocoding request failed');
+      }
+
+      const data = await response.json();
+
+      if (data.status === 'OK' && data.results && data.results.length > 0) {
+        const result = data.results[0];
+        const lat = result.geometry.location.lat;
+        const lng = result.geometry.location.lng;
+
+        updateLocation(index, 'latitude', lat);
+        updateLocation(index, 'longitude', lng);
+
+        toast.success(`Coordinates found: ${lat.toFixed(6)}, ${lng.toFixed(6)}`);
+      } else if (data.status === 'ZERO_RESULTS') {
+        toast.error('No coordinates found for this address. Please check the address and try again.');
+      } else if (data.status === 'REQUEST_DENIED') {
+        toast.error('Geocoding request denied. Please check your API key permissions.');
+      } else {
+        toast.error(`Geocoding failed: ${data.status}`);
+      }
     } catch (error) {
       console.error('Error geocoding address:', error);
-      toast.error('Failed to geocode address');
+      toast.error('Failed to get coordinates. Please check your internet connection and try again.');
+    } finally {
+      setGeocodingStates(prev => ({ ...prev, [index]: false }));
     }
   };
 
@@ -166,6 +223,14 @@ const LocationsEditor = () => {
           Add Store Location
         </Button>
       </div>
+
+      {!googleMapsApiKey && (
+        <div className="bg-amber-50 p-4 rounded-lg border border-amber-200">
+          <p className="text-amber-800 text-sm">
+            <strong>Note:</strong> Google Maps API key is not configured. The geocoding feature will not work until you configure it in the Maps settings tab.
+          </p>
+        </div>
+      )}
 
       <div className="space-y-4">
         {locations.map((location, index) => (
@@ -252,9 +317,10 @@ const LocationsEditor = () => {
                 onClick={() => geocodeAddress(index)}
                 variant="outline"
                 size="sm"
+                disabled={!googleMapsApiKey || !location.address || geocodingStates[index]}
               >
                 <MapPin className="mr-2" size={16} />
-                Get Coordinates from Address
+                {geocodingStates[index] ? 'Getting Coordinates...' : 'Get Coordinates from Address'}
               </Button>
             </CardContent>
           </Card>
