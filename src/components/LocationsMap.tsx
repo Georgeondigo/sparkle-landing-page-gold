@@ -41,7 +41,8 @@ const LocationsMap = () => {
       }
 
       if (data && data.setting_value) {
-        setGoogleMapsApiKey(data.setting_value);
+        // Ensure we convert to string
+        setGoogleMapsApiKey(String(data.setting_value));
         console.log('Google Maps API key fetched successfully');
       } else {
         console.log('No Google Maps API key found in database');

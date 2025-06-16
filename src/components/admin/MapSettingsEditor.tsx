@@ -30,7 +30,8 @@ const MapSettingsEditor = () => {
       }
 
       if (data) {
-        setApiKey(data.setting_value || '');
+        // Ensure we convert to string, handling null/undefined cases
+        setApiKey(data.setting_value ? String(data.setting_value) : '');
       }
     } catch (error) {
       console.error('Error fetching API key:', error);
