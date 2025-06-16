@@ -41,15 +41,21 @@ const InteractiveMap: React.FC<InteractiveMapProps> = ({ locations, apiKey }) =>
     setIsLoading(true);
     
     try {
+      console.log('Loading Google Maps with API key:', key.substring(0, 10) + '...');
+      
       const loader = new Loader({
         apiKey: key,
         version: 'weekly',
-        libraries: ['places', 'marker']
+        libraries: ['places']
       });
 
       await loader.load();
+      console.log('Google Maps API loaded successfully');
       
-      if (!mapRef.current) return;
+      if (!mapRef.current) {
+        console.error('Map container not found');
+        return;
+      }
 
       // Clear existing markers
       markersRef.current.forEach(marker => marker.setMap(null));
@@ -59,6 +65,8 @@ const InteractiveMap: React.FC<InteractiveMapProps> = ({ locations, apiKey }) =>
       const defaultCenter = locations.length > 0 && locations[0].latitude && locations[0].longitude
         ? { lat: locations[0].latitude, lng: locations[0].longitude }
         : { lat: 20.5937, lng: 78.9629 }; // Center of India
+
+      console.log('Creating map with center:', defaultCenter);
 
       const map = new google.maps.Map(mapRef.current, {
         zoom: locations.length > 1 ? 6 : 12,
@@ -79,28 +87,29 @@ const InteractiveMap: React.FC<InteractiveMapProps> = ({ locations, apiKey }) =>
       });
 
       mapInstanceRef.current = map;
+      console.log('Map created successfully');
 
       // Add markers for each location
       const bounds = new google.maps.LatLngBounds();
       let hasValidCoordinates = false;
 
-      locations.forEach((location) => {
+      locations.forEach((location, index) => {
+        console.log(`Processing location ${index + 1}:`, location.name, location.latitude, location.longitude);
+        
         if (location.latitude && location.longitude) {
           hasValidCoordinates = true;
           
           const marker = new google.maps.Marker({
-            position: { lat: location.latitude, lng: location.longitude },
+            position: { lat: Number(location.latitude), lng: Number(location.longitude) },
             map: map,
             title: location.name,
             icon: {
-              url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(`
-                <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <circle cx="16" cy="16" r="12" fill="#8B5CF6" stroke="white" stroke-width="2"/>
-                  <path d="M16 12v4l3 2" stroke="white" stroke-width="2" stroke-linecap="round"/>
-                </svg>
-              `)}`,
-              scaledSize: new google.maps.Size(32, 32),
-              anchor: new google.maps.Point(16, 16)
+              path: google.maps.SymbolPath.CIRCLE,
+              scale: 8,
+              fillColor: '#8B5CF6',
+              fillOpacity: 1,
+              strokeColor: '#ffffff',
+              strokeWeight: 2
             }
           });
 
@@ -128,7 +137,9 @@ const InteractiveMap: React.FC<InteractiveMapProps> = ({ locations, apiKey }) =>
 
           (marker as any).infoWindow = infoWindow;
           markersRef.current.push(marker);
-          bounds.extend({ lat: location.latitude, lng: location.longitude });
+          bounds.extend({ lat: Number(location.latitude), lng: Number(location.longitude) });
+          
+          console.log(`Added marker for ${location.name}`);
         }
       });
 
@@ -137,11 +148,13 @@ const InteractiveMap: React.FC<InteractiveMapProps> = ({ locations, apiKey }) =>
         map.fitBounds(bounds);
         const padding = { top: 50, right: 50, bottom: 50, left: 50 };
         map.fitBounds(bounds, padding);
+        console.log('Map bounds fitted to locations');
       }
 
       setMapLoaded(true);
       setShowApiKeyInput(false);
       toast.success('Google Maps loaded successfully!');
+      console.log('Map setup completed');
 
     } catch (error) {
       console.error('Error loading Google Maps:', error);
@@ -159,10 +172,11 @@ const InteractiveMap: React.FC<InteractiveMapProps> = ({ locations, apiKey }) =>
 
   // Auto-load map if API key is provided
   useEffect(() => {
-    if (apiKey && mapRef.current) {
+    if (apiKey && mapRef.current && !mapLoaded) {
+      console.log('Auto-loading map with provided API key');
       loadMap(apiKey);
     }
-  }, [apiKey]);
+  }, [apiKey, mapLoaded]);
 
   if (showApiKeyInput || !mapLoaded) {
     return (
@@ -174,7 +188,7 @@ const InteractiveMap: React.FC<InteractiveMapProps> = ({ locations, apiKey }) =>
               Interactive Google Maps
             </h3>
             
-            {!apiKey && (
+            {!mapLoaded && (
               <>
                 <p className="text-muted-foreground mb-6">
                   Enter your Google Maps API key to enable the interactive map with store locations
@@ -214,7 +228,7 @@ const InteractiveMap: React.FC<InteractiveMapProps> = ({ locations, apiKey }) =>
               </>
             )}
             
-            {apiKey && isLoading && (
+            {isLoading && (
               <p className="text-muted-foreground">Loading interactive map...</p>
             )}
           </div>
