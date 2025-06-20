@@ -1,5 +1,6 @@
+
 import React, { useEffect, useState } from 'react';
-import { ArrowDown, MapPin, Star, Sparkles, Shield, Award } from 'lucide-react';
+import { ArrowDown, MapPin, Star, Sparkles, Shield, Award, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import OrderNowButton from './OrderNowButton';
 import { supabase } from '@/integrations/supabase/client';
@@ -38,7 +39,6 @@ const Hero = () => {
       }
     } catch (error) {
       console.error('Error fetching hero content:', error);
-      // Keep fallback content if fetch fails
     }
   };
 
@@ -57,136 +57,186 @@ const Hero = () => {
   };
 
   return (
-    <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-background via-background to-muted/20">
-      {/* Animated Background Elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-secondary/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-primary/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-secondary/5 to-primary/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
+    <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden">
+      {/* Enhanced Animated Background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-background via-muted/10 to-secondary/5">
+        <div className="absolute inset-0 opacity-40">
+          <div className="absolute top-20 left-20 w-72 h-72 bg-gradient-to-br from-secondary/20 to-primary/10 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-20 right-20 w-96 h-96 bg-gradient-to-br from-primary/10 to-secondary/15 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
+          <div className="absolute top-1/2 left-1/3 w-64 h-64 bg-gradient-to-br from-secondary/15 to-transparent rounded-full blur-3xl animate-pulse" style={{ animationDelay: '4s' }}></div>
+        </div>
+        
+        {/* Floating particles */}
+        <div className="absolute inset-0">
+          {[...Array(20)].map((_, i) => (
+            <div
+              key={i}
+              className="absolute w-2 h-2 bg-secondary/20 rounded-full animate-pulse"
+              style={{
+                top: `${Math.random() * 100}%`,
+                left: `${Math.random() * 100}%`,
+                animationDelay: `${Math.random() * 5}s`,
+                animationDuration: `${3 + Math.random() * 4}s`
+              }}
+            />
+          ))}
+        </div>
       </div>
 
-      {/* Hero Image with Overlay */}
+      {/* Hero Image with Enhanced Overlay */}
       <div className="absolute inset-0 z-0">
-        <div className="absolute inset-0 bg-gradient-to-br from-background/95 via-background/90 to-background/85"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-background/98 via-background/95 to-background/90"></div>
         <img 
           src={content.image_url} 
-          alt="Car with swirl marks showing the problem with regular cloths"
-          className="w-full h-full object-cover opacity-15"
+          alt="Car maintenance and cleaning"
+          className="w-full h-full object-cover opacity-8"
         />
+        <div className="absolute inset-0 bg-gradient-to-t from-background/60 via-transparent to-background/30"></div>
       </div>
 
       {/* Main Content */}
       <div className="relative z-10 container mx-auto px-4 text-center">
-        <div className={`transition-all duration-1000 ${
-          isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+        <div className={`transition-all duration-1200 ease-out ${
+          isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'
         }`}>
-          {/* Brand Badge */}
-          <div className="inline-flex items-center space-x-2 bg-secondary/10 border border-secondary/20 rounded-full px-6 py-2 mb-8">
-            <Sparkles className="text-secondary" size={16} />
-            <span className="text-sm font-medium text-secondary">Made in EU • Now in East Africa</span>
+          {/* Enhanced Brand Badge */}
+          <div className="inline-flex items-center space-x-3 bg-gradient-to-r from-secondary/15 to-primary/10 backdrop-blur-sm border border-secondary/30 rounded-full px-8 py-3 mb-10 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+            <Sparkles className="text-secondary animate-pulse" size={20} />
+            <span className="text-sm font-semibold bg-gradient-to-r from-secondary to-primary bg-clip-text text-transparent">
+              Made in EU • Now in East Africa
+            </span>
+            <div className="w-2 h-2 bg-secondary rounded-full animate-pulse"></div>
           </div>
 
-          {/* Problem Statement */}
-          <div className="mb-8">
-            <p className="text-xl md:text-2xl text-muted-foreground font-medium mb-6 italic">
+          {/* Enhanced Problem Statement */}
+          <div className="mb-12">
+            <p className="text-xl md:text-3xl text-muted-foreground font-medium mb-8 italic leading-relaxed max-w-4xl mx-auto">
               {content.subtitle}
             </p>
+            <div className="w-24 h-1 bg-gradient-to-r from-transparent via-secondary to-transparent mx-auto mb-8"></div>
             
-            <h1 className="text-5xl md:text-7xl lg:text-8xl font-serif font-bold mb-4 leading-tight">
-              <span className="text-primary">{content.title.split(' ')[0]}</span>
+            <h1 className="text-6xl md:text-8xl lg:text-9xl font-serif font-bold mb-6 leading-tight">
+              <span className="text-primary drop-shadow-sm">{content.title.split(' ')[0]}</span>
               <br />
-              <span className="text-transparent bg-gradient-to-r from-secondary via-secondary to-primary bg-clip-text">
+              <span className="text-transparent bg-gradient-to-r from-secondary via-secondary/80 to-primary bg-clip-text animate-shimmer">
                 {content.title.split(' ')[1]}
               </span>
             </h1>
             
-            {/* Subtitle with Animation */}
-            <div className="relative">
-              <p className="text-xl md:text-2xl text-secondary font-medium mb-2">
+            {/* Enhanced Subtitle with floating animation */}
+            <div className="relative mb-8">
+              <p className="text-2xl md:text-3xl text-secondary font-medium mb-3 animate-float">
                 Edgeless Microfiber Excellence
               </p>
-              <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-24 h-0.5 bg-gradient-to-r from-transparent via-secondary to-transparent"></div>
+              <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-32 h-1 bg-gradient-to-r from-transparent via-secondary to-transparent opacity-60"></div>
             </div>
           </div>
 
-          {/* Description */}
-          <p className="text-lg md:text-xl text-foreground/80 mb-4 max-w-4xl mx-auto leading-relaxed">
-            {content.description}
-          </p>
+          {/* Enhanced Description */}
+          <div className="mb-8">
+            <p className="text-lg md:text-2xl text-foreground/90 mb-6 max-w-5xl mx-auto leading-relaxed font-light">
+              {content.description}
+            </p>
+            <p className="text-sm text-muted-foreground/80 font-medium tracking-wide">
+              From Japan • Perfected in Korea & Germany • Now in East Africa
+            </p>
+          </div>
 
-          {/* Brand Attribution */}
-          <p className="text-sm text-muted-foreground mb-12">
-            From Japan • Perfected in Korea & Germany • Now in East Africa
-          </p>
-
-          {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
+          {/* Enhanced CTA Buttons */}
+          <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-20">
             <OrderNowButton 
               size="lg"
-              className="bg-gradient-to-r from-secondary to-secondary/90 text-secondary-foreground hover:from-secondary/90 hover:to-secondary/80 transform hover:scale-105 transition-all duration-300 shadow-xl px-8 py-4 text-lg font-semibold"
-            />
+              className="group bg-gradient-to-r from-secondary via-secondary to-secondary/90 text-secondary-foreground hover:from-secondary/90 hover:to-secondary transform hover:scale-110 transition-all duration-500 shadow-2xl px-10 py-5 text-xl font-bold rounded-2xl border-2 border-secondary/20 hover:border-secondary/40"
+            >
+              <span className="flex items-center">
+                Get Your Sparkles
+                <ChevronRight className="ml-2 group-hover:translate-x-1 transition-transform duration-300" size={24} />
+              </span>
+            </OrderNowButton>
             
             <Button 
               onClick={scrollToProducts}
               variant="outline"
               size="lg"
-              className="border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-all duration-300 px-8 py-4 text-lg font-medium"
+              className="group border-3 border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-all duration-500 px-10 py-5 text-xl font-semibold rounded-2xl hover:shadow-xl hover:scale-105"
             >
-              See the Difference
+              <span className="flex items-center">
+                See the Science
+                <Sparkles className="ml-2 group-hover:rotate-12 transition-transform duration-300" size={20} />
+              </span>
             </Button>
             
             <Button 
               onClick={scrollToLocations}
               variant="ghost"
               size="lg"
-              className="text-primary hover:bg-primary/10 transition-all duration-300 px-8 py-4 text-lg font-medium"
+              className="group text-primary hover:bg-primary/15 transition-all duration-500 px-10 py-5 text-xl font-medium rounded-2xl hover:shadow-lg"
             >
-              <MapPin className="mr-2" size={20} />
+              <MapPin className="mr-2 group-hover:bounce transition-all duration-300" size={22} />
               Find Stockist
             </Button>
           </div>
 
           {/* Enhanced Value Propositions */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            <div className="group text-center p-6 rounded-2xl bg-gradient-to-br from-background to-muted/30 border border-muted hover:border-secondary/30 transition-all duration-300 hover:transform hover:scale-105">
-              <div className="w-16 h-16 bg-gradient-to-br from-secondary/20 to-secondary/10 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:from-secondary/30 group-hover:to-secondary/20 transition-all duration-300">
-                <Shield className="text-secondary" size={24} />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-10 max-w-6xl mx-auto">
+            {[
+              {
+                icon: <Shield size={28} />,
+                title: "Zero Swirls",
+                description: "Ultrasonically cut edges eliminate scratches and swirl marks",
+                gradient: "from-blue-500/20 to-blue-600/10"
+              },
+              {
+                icon: <Sparkles size={28} />,
+                title: "Lint-Free",
+                description: "No fraying, no lint, pristine results every time",
+                gradient: "from-secondary/20 to-secondary/10"
+              },
+              {
+                icon: <Award size={28} />,
+                title: "Multi-Use",
+                description: "Perfect for cars, electronics, jewelry, and fine surfaces",
+                gradient: "from-purple-500/20 to-purple-600/10"
+              }
+            ].map((feature, index) => (
+              <div 
+                key={index}
+                className={`group text-center p-8 rounded-3xl bg-gradient-to-br ${feature.gradient} backdrop-blur-sm border border-white/20 hover:border-secondary/40 transition-all duration-500 hover:transform hover:scale-110 hover:shadow-2xl cursor-pointer`}
+              >
+                <div className="w-20 h-20 bg-gradient-to-br from-secondary/30 to-secondary/10 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:from-secondary/40 group-hover:to-secondary/20 transition-all duration-500 group-hover:rotate-12">
+                  <div className="text-secondary group-hover:scale-110 transition-transform duration-300">
+                    {feature.icon}
+                  </div>
+                </div>
+                <h3 className="text-xl font-bold text-primary mb-3 group-hover:text-secondary transition-colors duration-300">
+                  {feature.title}
+                </h3>
+                <p className="text-sm text-muted-foreground leading-relaxed group-hover:text-foreground/80 transition-colors duration-300">
+                  {feature.description}
+                </p>
               </div>
-              <h3 className="text-lg font-bold text-primary mb-2">Zero Swirls</h3>
-              <p className="text-sm text-muted-foreground">Ultrasonically cut edges eliminate scratches and swirl marks</p>
-            </div>
-            
-            <div className="group text-center p-6 rounded-2xl bg-gradient-to-br from-background to-muted/30 border border-muted hover:border-secondary/30 transition-all duration-300 hover:transform hover:scale-105">
-              <div className="w-16 h-16 bg-gradient-to-br from-secondary/20 to-secondary/10 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:from-secondary/30 group-hover:to-secondary/20 transition-all duration-300">
-                <Sparkles className="text-secondary" size={24} />
-              </div>
-              <h3 className="text-lg font-bold text-primary mb-2">Lint-Free</h3>
-              <p className="text-sm text-muted-foreground">No fraying, no lint, pristine results every time</p>
-            </div>
-            
-            <div className="group text-center p-6 rounded-2xl bg-gradient-to-br from-background to-muted/30 border border-muted hover:border-secondary/30 transition-all duration-300 hover:transform hover:scale-105">
-              <div className="w-16 h-16 bg-gradient-to-br from-secondary/20 to-secondary/10 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:from-secondary/30 group-hover:to-secondary/20 transition-all duration-300">
-                <Award className="text-secondary" size={24} />
-              </div>
-              <h3 className="text-lg font-bold text-primary mb-2">Multi-Use</h3>
-              <p className="text-sm text-muted-foreground">Perfect for cars, electronics, jewelry, and fine surfaces</p>
-            </div>
+            ))}
           </div>
         </div>
 
-        {/* Scroll Indicator */}
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-          <div className="flex flex-col items-center space-y-2">
-            <span className="text-xs text-muted-foreground">Discover the technology</span>
-            <ArrowDown className="text-secondary" size={24} />
+        {/* Enhanced Scroll Indicator */}
+        <div className="absolute bottom-12 left-1/2 transform -translate-x-1/2">
+          <div className="flex flex-col items-center space-y-3 group cursor-pointer" onClick={scrollToProducts}>
+            <span className="text-sm text-muted-foreground font-medium group-hover:text-secondary transition-colors duration-300">
+              Discover the technology
+            </span>
+            <div className="animate-bounce group-hover:animate-pulse">
+              <ArrowDown className="text-secondary group-hover:scale-125 transition-transform duration-300" size={28} />
+            </div>
+            <div className="w-0.5 h-8 bg-gradient-to-b from-secondary to-transparent group-hover:h-12 transition-all duration-500"></div>
           </div>
         </div>
       </div>
 
-      {/* Decorative Elements */}
-      <div className="absolute top-1/4 left-10 w-1 h-20 bg-gradient-to-b from-secondary to-transparent opacity-60 hidden lg:block"></div>
-      <div className="absolute top-1/3 right-10 w-1 h-28 bg-gradient-to-b from-secondary to-transparent opacity-60 hidden lg:block"></div>
-      <div className="absolute bottom-1/4 left-20 w-1 h-16 bg-gradient-to-t from-secondary to-transparent opacity-60 hidden lg:block"></div>
+      {/* Enhanced Decorative Elements */}
+      <div className="absolute top-1/4 left-8 w-2 h-24 bg-gradient-to-b from-secondary via-secondary/60 to-transparent opacity-70 hidden lg:block animate-pulse"></div>
+      <div className="absolute top-1/3 right-8 w-2 h-32 bg-gradient-to-b from-secondary via-secondary/60 to-transparent opacity-70 hidden lg:block animate-pulse" style={{ animationDelay: '1s' }}></div>
+      <div className="absolute bottom-1/4 left-16 w-2 h-20 bg-gradient-to-t from-secondary via-secondary/60 to-transparent opacity-70 hidden lg:block animate-pulse" style={{ animationDelay: '2s' }}></div>
     </section>
   );
 };
