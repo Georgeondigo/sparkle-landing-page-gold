@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { ArrowDown, MapPin, Star, Sparkles, Shield, Award, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -145,8 +146,13 @@ const Hero = () => {
           <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-20">
             <OrderNowButton 
               size="lg"
-              className="bg-gradient-to-r from-secondary via-secondary to-secondary/90 text-secondary-foreground hover:from-secondary/90 hover:to-secondary transform hover:scale-110 transition-all duration-500 shadow-2xl px-10 py-5 text-xl font-bold rounded-2xl border-2 border-secondary/20 hover:border-secondary/40"
-            />
+              className="group bg-gradient-to-r from-secondary via-secondary to-secondary/90 text-secondary-foreground hover:from-secondary/90 hover:to-secondary transform hover:scale-110 transition-all duration-500 shadow-2xl px-10 py-5 text-xl font-bold rounded-2xl border-2 border-secondary/20 hover:border-secondary/40"
+            >
+              <span className="flex items-center">
+                Get Your Sparkles
+                <ChevronRight className="ml-2 group-hover:translate-x-1 transition-transform duration-300" size={24} />
+              </span>
+            </OrderNowButton>
             
             <Button 
               onClick={scrollToProducts}
