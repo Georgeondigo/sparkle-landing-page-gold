@@ -7,6 +7,7 @@ import ProductHighlights from '../components/ProductHighlights';
 import MarketingSlider from '../components/MarketingSlider';
 import About from '../components/About';
 import Testimonials from '../components/Testimonials';
+import SocialCallToAction from '../components/SocialCallToAction';
 import FAQ from '../components/FAQ';
 import Newsletter from '../components/Newsletter';
 import LocationsMap from '../components/LocationsMap';
@@ -21,11 +22,12 @@ const Index = () => {
       <Header />
       <main>
         <Hero />
-        <FeaturedProducts />
         <ProductHighlights />
+        <FeaturedProducts />
         <MarketingSlider />
         <About />
         <Testimonials />
+        <SocialCallToAction />
         <FAQ />
         <Newsletter />
         <LocationsMap />

@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { ArrowDown, MapPin, Star, Sparkles, Shield, Award } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -16,9 +15,9 @@ const Hero = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [content, setContent] = useState<HeroContent>({
     title: 'Tiffany Sparkles',
-    subtitle: 'Premium Microfiber Excellence',
-    description: 'Experience the ultimate in cleaning technology with our superior microfiber cloths. Designed for modern lifestyles, crafted with precision, and built to last.',
-    image_url: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=2000'
+    subtitle: 'You\'ve already bought the shine. Maintain it, right?',
+    description: 'You clean and polish your car regularly, yet it still shows up with swirls and light scratches. Why? Because of the cloth you\'re using. Our edgeless microfiber cloths eliminate swirls and scratches forever.',
+    image_url: 'https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?q=80&w=2000'
   });
 
   useEffect(() => {
@@ -71,7 +70,7 @@ const Hero = () => {
         <div className="absolute inset-0 bg-gradient-to-br from-background/95 via-background/90 to-background/85"></div>
         <img 
           src={content.image_url} 
-          alt="Premium microfiber cloth background"
+          alt="Car with swirl marks showing the problem with regular cloths"
           className="w-full h-full object-cover opacity-15"
         />
       </div>
@@ -84,28 +83,15 @@ const Hero = () => {
           {/* Brand Badge */}
           <div className="inline-flex items-center space-x-2 bg-secondary/10 border border-secondary/20 rounded-full px-6 py-2 mb-8">
             <Sparkles className="text-secondary" size={16} />
-            <span className="text-sm font-medium text-secondary">Premium Quality Since 2009</span>
+            <span className="text-sm font-medium text-secondary">Made in EU • Now in East Africa</span>
           </div>
 
-          {/* Trust Indicators */}
-          <div className="flex items-center justify-center space-x-8 mb-8">
-            <div className="flex items-center space-x-2">
-              <div className="flex">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} size={18} className="text-secondary fill-current" />
-                ))}
-              </div>
-              <span className="text-sm font-medium text-muted-foreground">4.9/5 Rating</span>
-            </div>
-            <div className="hidden sm:block w-px h-6 bg-border"></div>
-            <div className="flex items-center space-x-2">
-              <Award className="text-secondary" size={18} />
-              <span className="text-sm font-medium text-muted-foreground">10,000+ Happy Customers</span>
-            </div>
-          </div>
-
-          {/* Main Heading */}
+          {/* Problem Statement */}
           <div className="mb-8">
+            <p className="text-xl md:text-2xl text-muted-foreground font-medium mb-6 italic">
+              {content.subtitle}
+            </p>
+            
             <h1 className="text-5xl md:text-7xl lg:text-8xl font-serif font-bold mb-4 leading-tight">
               <span className="text-primary">{content.title.split(' ')[0]}</span>
               <br />
@@ -117,7 +103,7 @@ const Hero = () => {
             {/* Subtitle with Animation */}
             <div className="relative">
               <p className="text-xl md:text-2xl text-secondary font-medium mb-2">
-                {content.subtitle}
+                Edgeless Microfiber Excellence
               </p>
               <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-24 h-0.5 bg-gradient-to-r from-transparent via-secondary to-transparent"></div>
             </div>
@@ -130,7 +116,7 @@ const Hero = () => {
 
           {/* Brand Attribution */}
           <p className="text-sm text-muted-foreground mb-12">
-            A Premium Brand by <span className="text-secondary font-semibold">Dinesh Gupta Limited</span>
+            From Japan • Perfected in Korea & Germany • Now in East Africa
           </p>
 
           {/* CTA Buttons */}
@@ -146,7 +132,7 @@ const Hero = () => {
               size="lg"
               className="border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-all duration-300 px-8 py-4 text-lg font-medium"
             >
-              View Products
+              See the Difference
             </Button>
             
             <Button 
@@ -156,7 +142,7 @@ const Hero = () => {
               className="text-primary hover:bg-primary/10 transition-all duration-300 px-8 py-4 text-lg font-medium"
             >
               <MapPin className="mr-2" size={20} />
-              Find a Store
+              Find Stockist
             </Button>
           </div>
 
@@ -166,24 +152,24 @@ const Hero = () => {
               <div className="w-16 h-16 bg-gradient-to-br from-secondary/20 to-secondary/10 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:from-secondary/30 group-hover:to-secondary/20 transition-all duration-300">
                 <Shield className="text-secondary" size={24} />
               </div>
-              <h3 className="text-lg font-bold text-primary mb-2">Premium Quality</h3>
-              <p className="text-sm text-muted-foreground">Superior microfiber technology crafted for excellence</p>
+              <h3 className="text-lg font-bold text-primary mb-2">Zero Swirls</h3>
+              <p className="text-sm text-muted-foreground">Ultrasonically cut edges eliminate scratches and swirl marks</p>
             </div>
             
             <div className="group text-center p-6 rounded-2xl bg-gradient-to-br from-background to-muted/30 border border-muted hover:border-secondary/30 transition-all duration-300 hover:transform hover:scale-105">
               <div className="w-16 h-16 bg-gradient-to-br from-secondary/20 to-secondary/10 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:from-secondary/30 group-hover:to-secondary/20 transition-all duration-300">
                 <Sparkles className="text-secondary" size={24} />
               </div>
-              <h3 className="text-lg font-bold text-primary mb-2">Instant Support</h3>
-              <p className="text-sm text-muted-foreground">24/7 WhatsApp customer service and assistance</p>
+              <h3 className="text-lg font-bold text-primary mb-2">Lint-Free</h3>
+              <p className="text-sm text-muted-foreground">No fraying, no lint, pristine results every time</p>
             </div>
             
             <div className="group text-center p-6 rounded-2xl bg-gradient-to-br from-background to-muted/30 border border-muted hover:border-secondary/30 transition-all duration-300 hover:transform hover:scale-105">
               <div className="w-16 h-16 bg-gradient-to-br from-secondary/20 to-secondary/10 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:from-secondary/30 group-hover:to-secondary/20 transition-all duration-300">
-                <MapPin className="text-secondary" size={24} />
+                <Award className="text-secondary" size={24} />
               </div>
-              <h3 className="text-lg font-bold text-primary mb-2">Nationwide</h3>
-              <p className="text-sm text-muted-foreground">Available across India with fast delivery</p>
+              <h3 className="text-lg font-bold text-primary mb-2">Multi-Use</h3>
+              <p className="text-sm text-muted-foreground">Perfect for cars, electronics, jewelry, and fine surfaces</p>
             </div>
           </div>
         </div>
@@ -191,7 +177,7 @@ const Hero = () => {
         {/* Scroll Indicator */}
         <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
           <div className="flex flex-col items-center space-y-2">
-            <span className="text-xs text-muted-foreground">Scroll to explore</span>
+            <span className="text-xs text-muted-foreground">Discover the technology</span>
             <ArrowDown className="text-secondary" size={24} />
           </div>
         </div>

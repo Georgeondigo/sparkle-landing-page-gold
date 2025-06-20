@@ -37,39 +37,39 @@ const Testimonials = () => {
     }
   };
 
-  // Fallback testimonials if none in database
+  // Updated testimonials based on provided content
   const fallbackTestimonials: Testimonial[] = [
     {
       id: '1',
-      name: "Priya Sharma",
-      location: "Mumbai",
+      name: "Kimani",
+      location: "Car Wash Owner, South-B Nairobi",
       rating: 5,
-      message: "These microfiber cloths are amazing! They clean my glass surfaces without any streaks. Best purchase I've made for my home.",
-      avatar_url: "https://images.unsplash.com/photo-1494790108755-2616b612b786?q=80&w=100"
-    },
-    {
-      id: '2',
-      name: "Rajesh Kumar",
-      location: "Delhi",
-      rating: 5,
-      message: "I use Tiffany Sparkles cloths for my car detailing business. Customers always ask what makes the finish so perfect!",
+      message: "Due to its many obvious benefits, our car wash attendants only use the Tiffany Sparkles edgeless cloths on our customer cars now, and we tell them why.",
       avatar_url: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=100"
     },
     {
-      id: '3',
-      name: "Sneha Patel",
-      location: "Bangalore",
+      id: '2',
+      name: "Lucy",
+      location: "Lecturer, Kampala",
       rating: 5,
-      message: "Finally found cloths that don't leave lint on my electronics. The quality is outstanding and they last so long.",
-      avatar_url: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=100"
+      message: "It's been easy to see that the stainless steel stair banisters, windows and mirror, and my water taps no longer have those water marks after cleaning them.",
+      avatar_url: "https://images.unsplash.com/photo-1494790108755-2616b612b786?q=80&w=100"
+    },
+    {
+      id: '3',
+      name: "Denis",
+      location: "Kijabe, Nairobi",
+      rating: 5,
+      message: "I kept changing car polishes while chasing that lasting shine, but kumbe it was just the improper cloths I was using all along!",
+      avatar_url: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=100"
     },
     {
       id: '4',
-      name: "Modern Home Store",
-      location: "Pune",
+      name: "Sarah M.",
+      location: "Detailing Enthusiast, Mombasa",
       rating: 5,
-      message: "Our customers love these products. We've been stocking Tiffany Sparkles for 2 years now - excellent quality and reliability.",
-      avatar_url: "https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=100"
+      message: "Finally found cloths that work on my expensive jewelry and electronics. The edgeless design really makes all the difference - no more micro-scratches!",
+      avatar_url: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=100"
     }
   ];
 
@@ -80,16 +80,21 @@ const Testimonials = () => {
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-serif font-bold text-primary mb-4">
-            What Our Customers Say
+            Real Results from Real Customers
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Join thousands of satisfied customers who trust Tiffany Sparkles for their cleaning needs
+            See why professionals and enthusiasts across East Africa choose Tiffany Sparkles
           </p>
+          <div className="mt-6 text-center">
+            <p className="text-sm text-muted-foreground italic">
+              <strong>Warning:</strong> Following our socials may cause new and excessive admiration of shiny surfaces! 😊
+            </p>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto">
           {displayTestimonials.map((testimonial) => (
-            <Card key={testimonial.id} className="relative overflow-hidden">
+            <Card key={testimonial.id} className="relative overflow-hidden hover:shadow-lg transition-shadow duration-300">
               <CardContent className="p-8">
                 <div className="absolute top-4 right-4 text-secondary/20">
                   <Quote size={40} />
@@ -105,7 +110,7 @@ const Testimonials = () => {
                   ))}
                 </div>
                 
-                <p className="text-foreground/90 mb-6 leading-relaxed italic">
+                <p className="text-foreground/90 mb-6 leading-relaxed italic text-lg">
                   "{testimonial.message}"
                 </p>
                 
@@ -123,6 +128,16 @@ const Testimonials = () => {
               </CardContent>
             </Card>
           ))}
+        </div>
+
+        {/* Social Media Call to Action */}
+        <div className="mt-16 text-center">
+          <h3 className="text-xl font-semibold text-primary mb-4">
+            Join Our Clean Club
+          </h3>
+          <p className="text-muted-foreground mb-6">
+            Follow us on social media for more tips, tricks, and that satisfying shine content!
+          </p>
         </div>
       </div>
     </section>
