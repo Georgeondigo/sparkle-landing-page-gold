@@ -1,6 +1,6 @@
-
 import React from 'react';
 import { Mail, Phone, MapPin, Heart } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import SocialMedia from './SocialMedia';
 
 const Footer = () => {
@@ -128,9 +128,12 @@ const Footer = () => {
             </div>
             
             <div className="flex items-center space-x-6 text-sm">
-              <a href="#" className="text-primary-foreground/80 hover:text-secondary transition-colors duration-300">
+              <Link 
+                to="/privacy-policy" 
+                className="text-primary-foreground/80 hover:text-secondary transition-colors duration-300"
+              >
                 Privacy Policy
-              </a>
+              </Link>
               <a href="#" className="text-primary-foreground/80 hover:text-secondary transition-colors duration-300">
                 Terms of Service
               </a>
